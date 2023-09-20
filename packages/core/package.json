@@ -1,0 +1,14 @@
+{
+  "name": "core",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "Oliver",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^5.2.2"
+  },
+  "scripts": {
+    "compile": "tsc -b tsconfig.json"
+  }
+}

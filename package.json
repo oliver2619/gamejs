@@ -1,0 +1,17 @@
+{
+  "name": "gamejs",
+  "version": "1.0.0",
+  "description": "Game library",
+  "author": "Oliver",
+  "license": "MIT",
+  "homepage": "https://github.com/oliver2619/gamejs#readme",
+  "workspaces": [
+    "packages/core",
+    "packages/2d",
+    "packages/3d",
+    "packages/audio",
+    "packages/input",
+    "packages/showcase",
+    "packages/tools"
+  ]
+}
