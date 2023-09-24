@@ -10,7 +10,6 @@
     "packages/2d",
     "packages/3d",
     "packages/audio",
-    "packages/input",
     "packages/showcase",
     "packages/tools"
   ]

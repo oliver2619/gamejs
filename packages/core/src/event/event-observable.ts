@@ -1,4 +1,4 @@
-import {EventSubscription} from "./event-subscription";
+import { EventSubscription } from "./event-subscription";
 
 class BaseEventSubscription implements EventSubscription {
 
@@ -32,22 +32,44 @@ class EventSubscriptionImp<E> extends BaseEventSubscription {
     }
 }
 
+export class EventObservableData {
+    onAddFirstSubscription?: () => void;
+    onRemoveLastSubscription?: () => void;
+}
 export class EventObservable<E> {
 
     private readonly subscriptions: EventSubscriptionImp<E>[] = [];
     private readonly unsubscribeQueue: EventSubscription[] = [];
 
+    private readonly onAddFirstSubscription: () => void;
+    private readonly onRemoveLastSubscription: () => void;
+
     private isProducing = false;
+
+    get hasSubscriptions(): boolean {
+        return this.subscriptions.length > 0;
+    }
+
+    constructor(data?: EventObservableData) {
+        this.onAddFirstSubscription = data == undefined || data.onAddFirstSubscription == undefined ? () => { } : data.onAddFirstSubscription;
+        this.onRemoveLastSubscription = data == undefined || data.onRemoveLastSubscription == undefined ? () => { } : data.onRemoveLastSubscription;
+    }
 
     subscribe(callback: (event: E) => void): EventSubscription {
         const ret = new EventSubscriptionImp<E>(subscription => this.unsubscribe(subscription), callback, false);
         this.subscriptions.push(ret);
+        if (this.subscriptions.length === 1) {
+            this.onAddFirstSubscription();
+        }
         return ret;
     }
 
     subscribeOnce(callback: (event: E) => void): EventSubscription {
         const ret = new EventSubscriptionImp<E>(subscription => this.unsubscribe(subscription), callback, true);
         this.subscriptions.push(ret);
+        if (this.subscriptions.length === 1) {
+            this.onAddFirstSubscription();
+        }
         return ret;
     }
 
@@ -65,6 +87,7 @@ export class EventObservable<E> {
             });
             this.isProducing = false;
             this.unsubscribeQueue.forEach(it => this.unsubscribe(it));
+            this.unsubscribeQueue.splice(0, this.unsubscribeQueue.length);
             if (exceptions > 0) {
                 throw new Error(`${exceptions} exceptions occurred`);
             }
@@ -78,6 +101,9 @@ export class EventObservable<E> {
             const found = this.subscriptions.findIndex(it => it === subscription);
             if (found >= 0) {
                 this.subscriptions.splice(found, 1);
+                if (this.subscriptions.length === 0) {
+                    this.onRemoveLastSubscription();
+                }
             }
         }
     }

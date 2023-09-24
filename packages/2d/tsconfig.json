@@ -10,6 +10,12 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "composite": true
-  }
+    "paths": {
+      "core/*": ["../core/src/*"],
+      "2d/*": ["./src/*"]
+    }
+  },
+  "references": [
+    { "path": "../core" }
+  ]
 }

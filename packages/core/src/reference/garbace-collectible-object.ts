@@ -1,11 +1,11 @@
-import {ReferencedObject} from "./referenced-object";
-import {GarbageCollector} from "./garbage-collector";
+import { ReferencedObject } from "./referenced-object";
+import { GarbageCollector } from "./garbage-collector";
 
 enum ReferencedObjectState {
     CREATED, GC, DISPOSED
 }
 
-export class DefaultReferencedObject implements ReferencedObject {
+export class GarbageCollectibleObject implements ReferencedObject {
 
     private readonly references = new Map<any, number>();
 
@@ -53,5 +53,4 @@ export class DefaultReferencedObject implements ReferencedObject {
             }
         }
     }
-
 }

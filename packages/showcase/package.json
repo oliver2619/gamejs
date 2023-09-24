@@ -4,5 +4,11 @@
   "description": "",
   "keywords": [],
   "author": "Oliver",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^5.2.2"
+  },
+  "scripts": {
+    "compile": "tsc -b tsconfig.json"
+  }
 }

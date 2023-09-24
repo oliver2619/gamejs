@@ -1,4 +1,4 @@
-import {EventObservable} from "../event/event-observable";
+import { EventObservable } from "../event/event-observable";
 
 abstract class TimerImp {
 
@@ -100,11 +100,19 @@ class TimerImpMaxFps extends TimerImp {
     }
 }
 
+export interface TimerData {
+    fps?: number;
+    rate?: number;
+}
+
 export class Timer {
 
     readonly onTimer = new EventObservable<number>();
 
-    private timer: TimerImp = new TimerImpMaxFps(timeout => this.onTimer.produce(timeout));
+    rate: number;
+
+    private timerCallback = (timeout: number) => this.onTimer.produce(timeout * this.rate);
+    private timer: TimerImp;
     private _active = false;
 
     get active(): boolean {
@@ -126,14 +134,19 @@ export class Timer {
         return this.timer.fps;
     }
 
+    constructor(data?: TimerData) {
+        const timeout = data == undefined || data.fps == undefined || data.fps <= 0 || data.fps > 1000 ? undefined : ((1000 / data.fps) | 0);
+        this.timer = timeout == undefined ? new TimerImpMaxFps(this.timerCallback) : new TimerImpFixedFps(this.timerCallback, timeout);
+        this.rate = data == undefined || data.rate == undefined ? 1 : data.rate;
+    }
+
     setFixedFps(fps: number | undefined) {
         const timeout = fps == undefined || fps <= 0 || fps > 1000 ? undefined : ((1000 / fps) | 0);
         if (timeout !== this.timer.timeout) {
             if (this._active) {
                 this.timer.stop();
             }
-            const cb = (timeout: number) => this.onTimer.produce(timeout);
-            this.timer = timeout == undefined ? new TimerImpMaxFps(cb) : new TimerImpFixedFps(cb, timeout);
+            this.timer = timeout == undefined ? new TimerImpMaxFps(this.timerCallback) : new TimerImpFixedFps(this.timerCallback, timeout);
             if (this._active) {
                 this.timer.start();
             }
