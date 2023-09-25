@@ -2,8 +2,8 @@ import { EventObservable } from "../event/event-observable";
 import { ReadonlyVector2, Vector2 } from "./vector2";
 
 export interface CoordSystem2Data {
-    position?: ReadonlyVector2;
-    axis?: { x: ReadonlyVector2; y: ReadonlyVector2 };
+    readonly position?: ReadonlyVector2;
+    readonly axis?: { x: ReadonlyVector2; y: ReadonlyVector2 };
 }
 
 export abstract class ReadonlyCoordSystem2 {

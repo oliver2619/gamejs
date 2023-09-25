@@ -1,8 +1,9 @@
 {
-  "name": "audio",
+  "name": "@gamejs/audio",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
   "author": "Oliver",
-  "license": "MIT"
+  "license": "MIT",
+  "private": true
 }

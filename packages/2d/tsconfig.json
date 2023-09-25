@@ -3,17 +3,8 @@
   "include": [
     "./src/**/*.ts"
   ],
-  "exclude": [
-    "**/node_modules",
-    "**/dist"
-  ],
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "paths": {
-      "core/*": ["../core/src/*"],
-      "2d/*": ["./src/*"]
-    }
+    "outDir": "./dist"
   },
   "references": [
     { "path": "../core" }

@@ -1,8 +1,9 @@
 {
-  "name": "3d",
+  "name": "@gamejs/3d",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
   "author": "Oliver",
-  "license": "MIT"
+  "license": "MIT",
+  "private": true
 }

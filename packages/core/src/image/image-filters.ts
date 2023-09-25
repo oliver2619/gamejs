@@ -1,11 +1,11 @@
-import { Vector3 } from "../math/vector3";
+import {Vector3} from "../math/vector3";
 
 export class ImageFilters {
 
     static bump(height: number, distance: number): (img: HTMLImageElement | HTMLCanvasElement | ImageData, alpha: boolean) => ImageData {
         return (img: HTMLImageElement | HTMLCanvasElement | ImageData, alpha: boolean) => {
             distance = Math.max(1, Math.round(distance));
-            const imgData = this.imageToImageData(img, alpha);
+            const imgData = this.toImageData(img, alpha);
             const target = new ImageData(img.width, img.height);
             let i: number;
             let dz: number;
@@ -38,9 +38,9 @@ export class ImageFilters {
         };
     }
 
-    public static flipY(): (img: HTMLImageElement | HTMLCanvasElement | ImageData, alpha: boolean) => ImageData {
+    static flipY(): (img: HTMLImageElement | HTMLCanvasElement | ImageData, alpha: boolean) => ImageData {
         return (img: HTMLImageElement | HTMLCanvasElement | ImageData, alpha: boolean) => {
-            const imgData = this.imageToImageData(img, alpha);
+            const imgData = this.toImageData(img, alpha);
             const target = new ImageData(img.width, img.height);
             let i1: number, i2: number;
             for (let y = 0; y < img.height; ++y) {
@@ -57,25 +57,65 @@ export class ImageFilters {
         };
     }
 
-    private static imageToImageData(img: HTMLImageElement | HTMLCanvasElement | ImageData, alpha: boolean): ImageData {
-        if (img instanceof ImageData)
-            return img;
-        else if (img instanceof HTMLImageElement) {
-            const canvas: HTMLCanvasElement = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const context = canvas.getContext('2d', { alpha });
-            if (context == null) {
-                throw new Error('Failed to create 2d context')
+    static isTransparent(src: HTMLImageElement): boolean {
+        const data = this.toImageData(src, true);
+        for (let y = 0; y < data.height; ++y) {
+            const i = y * src.width * 4;
+            for (let x = 0; x < data.width; ++x) {
+                if (data.data[i + x * 4 + 3] < 255) {
+                    return true;
+                }
             }
-            context.drawImage(img, 0, 0);
-            return context.getImageData(0, 0, img.width, img.height);
+        }
+        return false;
+    }
+
+    static toRenderingContext(img: HTMLImageElement | ImageData, alpha: boolean): CanvasRenderingContext2D {
+        const canvas: HTMLCanvasElement = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const context = canvas.getContext('2d', {alpha});
+        if (context == null) {
+            throw new Error('Failed to create 2d context')
+        }
+        if (img instanceof ImageData) {
+            context.putImageData(img, 0, 0);
         } else {
-            const context = img.getContext('2d', { alpha });
+            context.drawImage(img, 0, 0);
+        }
+        return context;
+    }
+
+    static removeAlphaFromImage(img: HTMLImageElement): CanvasRenderingContext2D {
+        return this.toRenderingContext(img, false);
+    }
+
+    static toImageData(src: HTMLImageElement | HTMLCanvasElement | ImageData | CanvasRenderingContext2D, alpha: boolean): ImageData {
+        if (src instanceof ImageData)
+            return src;
+        else if (src instanceof HTMLImageElement) {
+            return this.toRenderingContext(src, alpha).getImageData(0, 0, src.width, src.height);
+        } else if (src instanceof HTMLCanvasElement) {
+            const context = src.getContext('2d', {alpha});
             if (context == null) {
                 throw new Error('Failed to create 2d context')
             }
-            return context.getImageData(0, 0, img.width, img.height);
+            return context.getImageData(0, 0, src.width, src.height);
+        } else {
+            return src.getImageData(0, 0, src.canvas.width, src.canvas.height);
+        }
+    }
+
+    static toImage(src: ImageData | CanvasRenderingContext2D, alpha: boolean): HTMLImageElement {
+        if (src instanceof ImageData) {
+            const context = this.toRenderingContext(src, alpha);
+            const ret = new Image(src.width, src.height);
+            ret.src = context.canvas.toDataURL();
+            return ret;
+        } else {
+            const ret = new Image(src.canvas.width, src.canvas.height);
+            ret.src = src.canvas.toDataURL();
+            return ret;
         }
     }
 

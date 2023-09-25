@@ -9,7 +9,7 @@ export class ImageResource implements ReferencedObject {
         return this.reference.hasReferences;
     }
 
-    constructor(public readonly image: HTMLImageElement, onDispose: () => void) {
+    constructor(public readonly image: HTMLImageElement, public readonly alpha: boolean, onDispose: () => void) {
         this.reference = new GarbageCollectibleObject(onDispose);
     }
 

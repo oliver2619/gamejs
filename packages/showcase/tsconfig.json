@@ -3,12 +3,11 @@
   "include": [
     "./src/**/*.ts"
   ],
-  "exclude": [
-    "**/node_modules",
-    "**/dist"
-  ],
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src"
-  }
+    "outDir": "./dist"
+  },
+  "references": [
+    { "path": "../core" },
+    { "path": "../2d" }
+  ]
 }

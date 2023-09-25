@@ -6,9 +6,9 @@ import { ReadonlyVector2, Vector2 } from "./math/vector2";
 import { GarbageCollector } from "./reference/garbage-collector";
 
 export interface ComponentData {
-    fps?: number;
-    rate?: number;
-    canvasToViewport?: (canvasSize: ReadonlyVector2) => ReadonlyVector2;
+    readonly fps?: number;
+    readonly rate?: number;
+    readonly canvasToViewport?: (canvasSize: ReadonlyVector2) => ReadonlyVector2;
 }
 
 export abstract class Component {

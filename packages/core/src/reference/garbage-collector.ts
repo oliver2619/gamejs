@@ -8,8 +8,10 @@ export class GarbageCollector {
     private static readonly items: GCItem[] = [];
 
     static processAll() {
-        this.items.forEach(it => it.onDispose());
-        this.items.splice(0, this.items.length);
+        while (this.items.length > 0) {
+            this.items.forEach(it => it.onDispose());
+            this.items.splice(0, this.items.length);
+        }
     }
 
     static processOne() {

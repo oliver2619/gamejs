@@ -210,7 +210,7 @@ class QuadTreeNode<E> {
     }
 }
 
-export class OctTree<E> {
+export class QuadTree<E> {
 
     private _boundingBox = Box2.empty();
     private _root: QuadTreeNode<E>;
