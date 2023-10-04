@@ -59,15 +59,16 @@ export abstract class ReadonlyBox2 {
 		}
 	}
 
-	getForRotatingObject(position: ReadonlyVector2): Box2 {
-		if (this.min == undefined || this.max == undefined)
-			return Box2.empty();
-		const newSize = this.max.getDifference(this.min).length / 2;
-		return this.cloneWith(
-			new Vector2(position.x - newSize, position.y - newSize),
-			new Vector2(position.x + newSize, position.y + newSize)
-		);
-	}
+	// this is wrong
+	// getForRotatingObject(position: ReadonlyVector2): Box2 {
+	// 	if (this.min == undefined || this.max == undefined)
+	// 		return Box2.empty();
+	// 	const newSize = this.max.getDifference(this.min).length / 2;
+	// 	return this.cloneWith(
+	// 		new Vector2(position.x - newSize, position.y - newSize),
+	// 		new Vector2(position.x + newSize, position.y + newSize)
+	// 	);
+	// }
 
 	getIntersection(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number): Box2 {
 		if (this.min == undefined || this.max == undefined)
@@ -125,12 +126,12 @@ export class Box2 extends ReadonlyBox2 {
 		return ret;
 	}
 
-	clear(): void {
+	clear() {
 		this.min = undefined;
 		this.max = undefined;
 	}
 
-	extend(x: number, y: number): void {
+	extend(x: number, y: number) {
 		if (this.min == undefined || this.max == undefined) {
 			this.min = new Vector2(x, y);
 			this.max = new Vector2(x, y);
@@ -146,7 +147,7 @@ export class Box2 extends ReadonlyBox2 {
 		}
 	}
 
-	extendByBox(box: ReadonlyBox2): void {
+	extendByBox(box: ReadonlyBox2) {
 		if (box.minimum == undefined || box.maximum == undefined) {
 			return;
 		}
@@ -165,21 +166,20 @@ export class Box2 extends ReadonlyBox2 {
 		}
 	}
 
-	extendByDirection(direction: ReadonlyVector2): void {
-		if (this.min == undefined || this.max == undefined) {
-			throw new Error('Box is empty');
+	extendByDirection(direction: ReadonlyVector2) {
+		if (this.min != undefined && this.max != undefined) {
+			if (direction.x < 0)
+				this.min.x += direction.x;
+			else
+				this.max.x += direction.x;
+			if (direction.y < 0)
+				this.min.y += direction.y;
+			else
+				this.max.y += direction.y;
 		}
-		if (direction.x < 0)
-			this.min.x += direction.x;
-		else
-			this.max.x += direction.x;
-		if (direction.y < 0)
-			this.min.y += direction.y;
-		else
-			this.max.y += direction.y;
 	}
 
-	extendByPoint(point: ReadonlyVector2): void {
+	extendByPoint(point: ReadonlyVector2) {
 		if (this.min == undefined || this.max == undefined) {
 			this.min = point.clone();
 			this.max = point.clone();
@@ -195,7 +195,16 @@ export class Box2 extends ReadonlyBox2 {
 		}
 	}
 
-	intersect(box: ReadonlyBox2): void {
+	extendEveryDirection(amount: number) {
+		if (amount > 0 && this.min != undefined && this.max != undefined) {
+			this.min.x -= amount;
+			this.min.y -= amount;
+			this.max.x += amount;
+			this.max.y += amount;
+		}
+	}
+
+	intersect(box: ReadonlyBox2) {
 		if (box.minimum == undefined || box.maximum == undefined || this.min == undefined || this.max == undefined)
 			return;
 		if (this.min.x < box.minimum.x)
@@ -230,7 +239,7 @@ export class Box2 extends ReadonlyBox2 {
 		return new Box2(min, max);
 	}
 
-	protected validate(): void {
+	protected validate() {
 		if (this.min != undefined && this.max != undefined && (this.min.x > this.max.x || this.min.y > this.max.y)) {
 			this.clear();
 		}

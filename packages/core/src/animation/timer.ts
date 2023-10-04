@@ -48,7 +48,7 @@ class TimerImpFixedFps extends TimerImp {
     start() {
         if (this.timerId == undefined) {
             this.reset();
-            this.timerId = setInterval(() => this.processTimer(), this.timeout);
+            this.timerId = setInterval(() => this.processTimer(), this.timeout) as unknown as number;
         }
     }
 

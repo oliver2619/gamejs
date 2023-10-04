@@ -10,6 +10,7 @@
     "packages/2d",
     "packages/3d",
     "packages/audio",
+    "packages/network",
     "packages/showcase",
     "packages/tools"
   ]

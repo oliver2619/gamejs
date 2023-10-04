@@ -10,6 +10,12 @@ export class AnimationSequence implements Animation, AnimationContainer {
 
     private readonly elements: Animation[] = [];
 
+    constructor(then?: () => void) {
+        if (then != undefined) {
+            this.onFinished.subscribe(then);
+        }
+    }
+
     addAnimation(animation: Animation) {
         this.elements.push(animation);
         if (this.elements.length === 1) {

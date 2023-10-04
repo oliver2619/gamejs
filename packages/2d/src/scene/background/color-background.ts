@@ -1,12 +1,15 @@
-import {Background} from "./background";
-import {Color} from 'core/src/index';
-import {RenderingContext2d} from "../../rendering-context2d";
+import { Background } from "./background";
+import { Color, ReadonlyColor } from 'core/src/index';
+import { RenderingContext2d } from "../../render/rendering-context2d";
 
 export class ColorBackground implements Background {
 
     readonly hasReferences = false
 
-    constructor(public color: Color) {
+    color: Color;
+
+    constructor(color: ReadonlyColor) {
+        this.color = color.clone();
     }
 
     addReference(holder: any): void {

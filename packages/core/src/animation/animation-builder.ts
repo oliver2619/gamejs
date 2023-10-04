@@ -28,8 +28,7 @@ export class AnimationBuilder {
     }
 
     infinite(callback: (event: InfiniteAnimationEvent) => void): AnimationBuilder {
-        const a = new InfiniteAnimation();
-        a.onAnimate.subscribe(callback);
+        const a = new InfiniteAnimation(callback);
         this.animation.addAnimation(a);
         return this;
     }
@@ -46,6 +45,16 @@ export class AnimationBuilder {
         callback(builder);
         this.animation.addAnimation(builder.build());
         return this;
+    }
+
+    static finite(data: AnimationBuilderFiniteData): FiniteAnimation {
+        const a = new FiniteAnimation(data);
+        a.onAnimate.subscribe(data.callback);
+        return a;
+    }
+
+    static infinite(callback: (event: InfiniteAnimationEvent) => void): InfiniteAnimation {
+        return new InfiniteAnimation(callback);
     }
 
     static parallel(): AnimationBuilder {

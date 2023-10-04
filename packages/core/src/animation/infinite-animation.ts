@@ -20,6 +20,12 @@ export class InfiniteAnimation implements Animation, InfiniteAnimationEvent {
     private _totalTime = 0;
     private _timeout = 0;
 
+    constructor(callback?: (ev: InfiniteAnimationEvent) => void) {
+        if(callback != undefined) {
+            this.onAnimate.subscribe(callback);
+        }
+    }
+
     animate(timeout: number) {
         if (this.active) {
             this._totalTime += timeout;

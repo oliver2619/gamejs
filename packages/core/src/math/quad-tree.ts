@@ -295,6 +295,19 @@ export class QuadTree<E> {
         elements.forEach(i => i.insert(this._root));
     }
 
+    removeAtBox(predicate: (e: E) => boolean, box: ReadonlyBox2): E | undefined {
+        const solids = this.findRecursivelyForBoundingBox(box).solids;
+        const i = solids.findIndex(el => predicate(el.element));
+        if (i >= 0) {
+            const ret = solids[i].element;
+            solids.splice(i, 1);
+            --this._size;
+            return ret;
+        } else {
+            return undefined;
+        }
+    }
+
     removePoint(element: E, position: ReadonlyVector2): boolean {
         const points = this.findRecursivelyForPoint(position).points;
         const i = points.findIndex(el => el.element === element);

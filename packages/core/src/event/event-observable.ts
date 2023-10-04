@@ -40,6 +40,7 @@ export class EventObservable<E> {
 
     private readonly subscriptions: EventSubscriptionImp<E>[] = [];
     private readonly unsubscribeQueue: EventSubscription[] = [];
+    private readonly receivers = new Map<any, EventSubscription>();
 
     private readonly onAddFirstSubscription: () => void;
     private readonly onRemoveLastSubscription: () => void;
@@ -62,6 +63,16 @@ export class EventObservable<E> {
             this.onAddFirstSubscription();
         }
         return ret;
+    }
+
+    subscribeFor(receiver: any, callback: (event: E) => void) {
+        const s = this.subscribe(callback);
+        const given = this.receivers.get(receiver);
+        if (given == undefined) {
+            this.receivers.set(receiver, s);
+        } else {
+            this.receivers.set(receiver, s.and(given));
+        }
     }
 
     subscribeOnce(callback: (event: E) => void): EventSubscription {
@@ -91,6 +102,14 @@ export class EventObservable<E> {
             if (exceptions > 0) {
                 throw new Error(`${exceptions} exceptions occurred`);
             }
+        }
+    }
+
+    unsubscribeAllForReceiver(receiver: any) {
+        const s = this.receivers.get(receiver);
+        if (s != undefined) {
+            this.receivers.delete(receiver);
+            s.unsubscribe();
         }
     }
 

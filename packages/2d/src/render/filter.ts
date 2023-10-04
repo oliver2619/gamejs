@@ -1,4 +1,4 @@
-import {Color, ReadonlyColor} from 'core/src/index';
+import { Box2, Color, EventObservable, ReadonlyColor } from 'core/src/index';
 
 class FilterElement {
 
@@ -76,6 +76,8 @@ class ShadowFilterElement {
 }
 
 export class Filter {
+
+    readonly onChangeBoundingBox = new EventObservable<Filter>();
 
     private readonly modifyCallback = () => this.modified = true;
 
@@ -170,7 +172,10 @@ export class Filter {
     }
 
     set shadow(v: number) {
-        this._shadow.value = v;
+        if(this._shadow.value !== v) {
+            this._shadow.value = v;
+            this.onChangeBoundingBox.produce(this);
+        }
     }
 
     get shadowColor(): ReadonlyColor {
@@ -210,6 +215,10 @@ export class Filter {
         ret._shadow.color.setColor(this.shadowColor.getMultiplied(filter.shadowColor));
         ret.createFilter();
         return ret;
+    }
+
+    extendBoundingBox(box: Box2) {
+        box.extendEveryDirection(this._shadow.value);
     }
 
     use(context: CanvasRenderingContext2D) {

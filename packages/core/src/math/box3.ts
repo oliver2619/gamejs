@@ -59,15 +59,16 @@ export abstract class ReadonlyBox3 {
 		}
 	}
 
-	getForRotatingObject(position: ReadonlyVector3): Box3 {
-		if (this.min == undefined || this.max == undefined)
-			return Box3.empty();
-		const newSize = this.max.getDifference(this.min).length / 2;
-		return this.cloneWith(
-			new Vector3(position.x - newSize, position.y - newSize, position.z - newSize),
-			new Vector3(position.x + newSize, position.y + newSize, position.z + newSize)
-		);
-	}
+	// this is wrong
+	// getForRotatingObject(position: ReadonlyVector3): Box3 {
+	// 	if (this.min == undefined || this.max == undefined)
+	// 		return Box3.empty();
+	// 	const newSize = this.max.getDifference(this.min).length / 2;
+	// 	return this.cloneWith(
+	// 		new Vector3(position.x - newSize, position.y - newSize, position.z - newSize),
+	// 		new Vector3(position.x + newSize, position.y + newSize, position.z + newSize)
+	// 	);
+	// }
 
 	getIntersection(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number): Box3 {
 		if (this.min == undefined || this.max == undefined)

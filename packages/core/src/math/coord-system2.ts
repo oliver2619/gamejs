@@ -1,4 +1,5 @@
 import { EventObservable } from "../event/event-observable";
+import { Box2, ReadonlyBox2 } from "./box2";
 import { ReadonlyVector2, Vector2 } from "./vector2";
 
 export interface CoordSystem2Data {
@@ -11,6 +12,7 @@ export abstract class ReadonlyCoordSystem2 {
     abstract readonly position: Vector2;
     abstract readonly xAxis: Vector2;
     abstract readonly yAxis: Vector2;
+    abstract readonly rotation: number;
 
     protected readonly _position: Vector2;
     protected readonly _xAxis: Vector2;
@@ -38,6 +40,18 @@ export abstract class ReadonlyCoordSystem2 {
         return new Vector2(
             point.getDotProduct(this._xAxis) / this._xAxis.squareLength,
             point.getDotProduct(this._yAxis) / this._yAxis.squareLength);
+    }
+
+    localBoxToGlobal(box: ReadonlyBox2): Box2 {
+        if (box.minimum == undefined || box.maximum == undefined) {
+            return box.clone();
+        }
+        const ret = Box2.empty();
+        ret.extendByPoint(this.localToGlobal(box.minimum));
+        ret.extendByPoint(this.localToGlobal(box.maximum));
+        ret.extendByPoint(this.localToGlobal(new Vector2(box.minimum.x, box.maximum.y)));
+        ret.extendByPoint(this.localToGlobal(new Vector2(box.maximum.x, box.minimum.y)));
+        return ret;
     }
 
     localToGlobal(point: ReadonlyVector2): Vector2 {
@@ -85,6 +99,19 @@ export class CoordSystem2 extends ReadonlyCoordSystem2 {
         this._yAxis.setVector(a);
     }
 
+    get rotation(): number {
+        return Math.atan2(this._xAxis.y, this._xAxis.x);
+    }
+
+    set rotation(r: number) {
+        this.batchModify(()=> {
+            const cs = Math.cos(r);
+            const sn = Math.sin(r);
+            this._xAxis.set(cs, sn);
+            this._yAxis.set(-sn, cs);
+        });
+    }
+
     constructor(data: CoordSystem2Data) {
         super(data);
         const modifyCallback = () => { if (this._enableModifyCallback) { this.onModify.produce(this); } };
@@ -111,6 +138,13 @@ export class CoordSystem2 extends ReadonlyCoordSystem2 {
         this.batchModify(() => {
             this._xAxis.rotate(angle);
             this._yAxis.rotate(angle);
+        });
+    }
+
+    scale(factor: number) {
+        this.batchModify(() => {
+            this._xAxis.scale(factor);
+            this._yAxis.scale(factor);
         });
     }
 

@@ -58,6 +58,12 @@ export class FiniteAnimation implements Animation, FiniteAnimationEvent {
         this.repetitions = data.repetitions;
         this._forward = this.loopMode === AnimationLoopMode.FORWARD || this.loopMode === AnimationLoopMode.BOTH || (this.loopMode === AnimationLoopMode.RANDOM && Math.random() < 0.5);
         this._progress = this._forward ? 0 : 1;
+        if (data.onAnimate != undefined) {
+            this.onAnimate.subscribe(data.onAnimate);
+        }
+        if (data.then != undefined) {
+            this.onFinished.subscribe(data.then);
+        }
     }
 
     animate(timeout: number) {

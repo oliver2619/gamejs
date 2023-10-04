@@ -1,5 +1,5 @@
 import {Background} from "./background";
-import {RenderingContext2d} from "../../rendering-context2d";
+import {RenderingContext2d} from "../../render/rendering-context2d";
 
 export class EmptyBackground implements Background {
 

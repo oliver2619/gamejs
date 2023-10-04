@@ -27,13 +27,14 @@ export class PromisesProgress {
     add(promise: Promise<any>): Promise<any> {
         ++this.loading;
         this.produceOnProgressEvent();
-        return promise.then(_ => {
+        return promise.then(it => {
             --this.loading;
             ++this.completed;
             this.produceOnProgressEvent();
             if (this.loading === 0) {
-                this.completedCallback!(this.completed);
+                setTimeout(() => this.completedCallback!(this.completed), 1);
             }
+            return it;
         }, reason => {
             --this.loading;
             this.onError.produce(reason);

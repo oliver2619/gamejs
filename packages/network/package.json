@@ -1,0 +1,16 @@
+{
+  "name": "@gamejs/network",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "Oliver",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@gamejs/core": "1.0.0",
+    "typescript": "^5.2.2"
+  },
+  "scripts": {
+    "compile": "tsc -b tsconfig.json"
+  }
+}

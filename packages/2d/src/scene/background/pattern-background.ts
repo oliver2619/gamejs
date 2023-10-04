@@ -1,11 +1,12 @@
-import {GarbageCollectibleObject, ImageResource} from "core/src/index";
-import {Background} from "./background";
-import {RenderingContext2d} from "../../rendering-context2d";
-import {Filter} from "../../filter";
+import { GarbageCollectibleObject } from "core/src/index";
+import { Background } from "./background";
+import { RenderingContext2d } from "../../render/rendering-context2d";
+import { Filter } from "../../render/filter";
+import { ImagePattern } from "../../material/image-pattern";
 
 export interface PatternBackgroundData {
     readonly alpha?: number;
-    readonly image: ImageResource;
+    readonly pattern: ImagePattern;
 }
 
 export class PatternBackground implements Background {
@@ -15,31 +16,28 @@ export class PatternBackground implements Background {
 
     private readonly reference = new GarbageCollectibleObject(() => this.onDispose());
 
-    private _image: ImageResource;
-    private modified = true;
-    private pattern: CanvasPattern | undefined;
+    private _pattern: ImagePattern;
 
     get hasReferences(): boolean {
         return this.reference.hasReferences;
     }
 
-    get image(): ImageResource {
-        return this._image;
+    get pattern(): ImagePattern {
+        return this._pattern;
     }
 
-    set image(i: ImageResource) {
-        if (this._image !== i) {
-            this._image.releaseReference(this);
-            this._image = i;
-            this._image.addReference(this);
-            this.modified = true;
+    set pattern(p: ImagePattern) {
+        if (this._pattern !== p) {
+            this._pattern.releaseReference(this);
+            this._pattern = p;
+            this._pattern.addReference(this);
         }
     }
 
     constructor(data: PatternBackgroundData) {
         this.alpha = data.alpha == undefined ? 1 : data.alpha;
-        this._image = data.image;
-        this._image.addReference(this);
+        this._pattern = data.pattern;
+        this._pattern.addReference(this);
     }
 
     addReference(holder: any) {
@@ -52,29 +50,17 @@ export class PatternBackground implements Background {
 
     render(context: RenderingContext2d) {
         context.withFilter(this.filter, ctx => {
-            if (this._image.alpha || this.alpha < 1) {
+            if (this._pattern.alpha || this.alpha < 1 || this._pattern.repetition !== 'repeat') {
                 ctx.clear()
             }
             ctx.context.globalAlpha *= this.alpha;
             this.filter.use(ctx.context);
-            this.updateAndUsePattern(ctx);
+            this._pattern.useFill(context);
             ctx.fill();
         });
     }
 
     private onDispose() {
-        this._image.releaseReference(this);
-    }
-
-    private updateAndUsePattern(context: RenderingContext2d) {
-        if (this.pattern == undefined || this.modified) {
-            const pattern = context.context.createPattern(this._image.image, "repeat");
-            if(pattern == null) {
-                throw new Error('Failed to create pattern');
-            }
-            this.pattern = pattern;
-            this.modified = false;
-        }
-        context.context.fillStyle = this.pattern;
+        this._pattern.releaseReference(this);
     }
 }

@@ -1,9 +1,9 @@
 import {PostEffect} from "./post-effect";
-import {RenderingContext2d} from "../../rendering-context2d";
+import {RenderingContext2d} from "../../render/rendering-context2d";
 
-export class PostEffectNone implements PostEffect {
+export class EmptyPostEffect implements PostEffect {
 
-    static readonly INSTANCE = new PostEffectNone();
+    static readonly INSTANCE = new EmptyPostEffect();
 
     readonly hasReferences = false
 

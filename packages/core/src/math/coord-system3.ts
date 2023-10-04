@@ -141,6 +141,14 @@ export class CoordSystem3 extends ReadonlyCoordSystem3 {
 		});
 	}
 
+	scale(f: number) {
+		this.batchModify(() => {
+			this._xAxis.scale(f);
+			this._yAxis.scale(f);
+			this._zAxis.scale(f);
+		});
+	}
+
 	setLookDirection(direction: ReadonlyVector3, up: ReadonlyVector3): void {
 		this.batchModify(() => {
 			this._zAxis.setVector(direction).length = -1;

@@ -1,3 +1,4 @@
+import { FiniteAnimationEvent } from "./finite-animation-event";
 import { TransitionFunction } from "./transition-function";
 
 export enum AnimationLoopMode {
@@ -11,4 +12,6 @@ export interface FiniteAnimationData {
     loopMode?: AnimationLoopMode;
     repetitions?: number;
     transitionFunction?: TransitionFunction;
+    onAnimate?: (ev: FiniteAnimationEvent) => void;
+    then?: () => void;
 }

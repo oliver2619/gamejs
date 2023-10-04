@@ -70,11 +70,11 @@ export abstract class ReadonlyColor {
     }
 
     toHtmlRgb(): string {
-        return `rgb(${this._r}, ${this._g}, ${this._b})`;
+        return `rgb(${Math.round(this._r * 255)}, ${Math.round(this._g * 255)}, ${Math.round(this._b * 255)})`;
     }
 
     toHtmlRgba(): string {
-        return `rgba(${this._r}, ${this._g}, ${this._b}, ${this._a})`;
+        return `rgba(${Math.round(this._r * 255)}, ${Math.round(this._g * 255)}, ${Math.round(this._b * 255)}, ${this._a})`;
     }
 
     toString(): string {
