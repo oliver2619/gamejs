@@ -3,6 +3,7 @@ import { CollisionMnemento } from "./collision-mnemento";
 import { DynamicCircle } from "./dynamic-circle";
 import { StaticBodyData } from "./static-body";
 import { StaticBoxedBody } from "./static-boxed-body";
+import {ForceConstraints} from "./force-constraints";
 
 export interface StaticCircleData extends StaticBodyData {
 
@@ -26,6 +27,9 @@ export class StaticCircle extends StaticBoxedBody {
     }
 
     getCollisionWithCircle(circle: DynamicCircle, mnemento: CollisionMnemento){
-        
+
+    }
+
+    getStaticForceConstraintForCircle(circle: DynamicCircle, constraints: ForceConstraints) {
     }
 }

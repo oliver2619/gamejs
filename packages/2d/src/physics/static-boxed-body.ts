@@ -1,6 +1,4 @@
 import { Box3, ReadonlyBox2, ReadonlyBox3 } from "core/src/index";
-import { CollisionMnemento } from "./collision-mnemento";
-import { DynamicCircle } from "./dynamic-circle";
 import { StaticBody, StaticBodyData } from "./static-body";
 
 export abstract class StaticBoxedBody extends StaticBody {
@@ -14,8 +12,6 @@ export abstract class StaticBoxedBody extends StaticBody {
     constructor(data: StaticBodyData) {
         super(data);
     }
-
-    abstract getCollisionWithCircle(circle: DynamicCircle, mnemento: CollisionMnemento): void;
 
     protected postConstruct(boundingBox: ReadonlyBox2) {
         this._boundingBox.clear();

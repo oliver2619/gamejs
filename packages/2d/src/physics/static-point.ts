@@ -2,6 +2,7 @@ import { ReadonlyVector2, ReadonlyVector3, Vector3 } from "core/src/index";
 import { CollisionMnemento } from "./collision-mnemento";
 import { DynamicCircle } from "./dynamic-circle";
 import { StaticBody, StaticBodyData } from "./static-body";
+import {ForceConstraints} from "./force-constraints";
 
 export interface StaticPointData extends StaticBodyData {
 
@@ -23,5 +24,8 @@ export class StaticPoint extends StaticBody {
 
     getCollisionWithCircle(circle: DynamicCircle, mnemento: CollisionMnemento) {
 
+    }
+
+    getStaticForceConstraintForCircle(circle: DynamicCircle, constraints: ForceConstraints) {
     }
 }

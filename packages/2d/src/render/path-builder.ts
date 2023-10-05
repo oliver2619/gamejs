@@ -55,7 +55,7 @@ export class PathBuilder {
     }
 
     lineTo(x: number, y: number): PathBuilder {
-        this.path.lineTo(x, y);
+        this.path.lineTo(x, -y);
         this.boundingBox.extend(x, y);
         return this;
     }

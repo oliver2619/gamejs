@@ -24,4 +24,8 @@ export class DynamicCircle extends DynamicBody {
     getStaticCollision(body: StaticBody, mnemento: CollisionMnemento) {
         body.getCollisionWithCircle(this, mnemento);
     }
+
+    getStaticForceConstraints(body: StaticBody) {
+        body.getStaticForceConstraintForCircle(this, this.forceConstraints);
+    }
 }

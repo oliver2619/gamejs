@@ -74,11 +74,20 @@ export class PhysicsSystem {
     }
 
     private _simulate(timeout: number) {
-        while (timeout > 0) {
-            this.dynamicBodies.forEach(body => {
-                body.resetForcesAndConstraints(this.globalAcceleration);
+        this.dynamicBodies.forEach(body => {
+            body.resetForcesAndConstraints(this.globalAcceleration);
+        });
+        this.dynamicBodies.forEach(body => {
+            this.staticLines.forEach(line => body.getStaticForceConstraints(line));
+            this.staticBodies.forEachInBox(body.staticBoundingBox, statBody => {
+                body.getStaticForceConstraints(statBody);
             });
-            this.dynamicBodies.forEach(body => body.simulateSpeed(timeout));
+        });
+        this.dynamicBodies.forEach(body => {
+            body.applyStaticForceConstraints();
+            body.simulateSpeed(timeout);
+        });
+        while (timeout > 0) {
             const mnemento = new CollisionMnemento(timeout);
             this.dynamicBodies.forEach(body => {
                 this.staticLines.forEach(line => body.getStaticCollision(line, mnemento));
@@ -97,7 +106,7 @@ export class PhysicsSystem {
 
     private _simulateStep(timeout: number) {
         this.dynamicBodies.forEach(body => {
-            body.simulate(timeout);
+            body.simulatePosition(timeout);
         });
     }
 }
