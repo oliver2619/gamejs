@@ -1,3 +1,0 @@
-export enum ImagePlacement {
-    CENTER, SCALED, SMOOTH_SCALED, STRETCHED, SMOOTH_STRETCHED
-}
