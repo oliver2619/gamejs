@@ -1,16 +1,10 @@
 # gamejs
 
-## 2d
+## Subprojects
 
-- physics engine
-- object / solid loader
-
-- material cache
-- solid, buffered layer: shadow
-- bones & bone animation
-- object / solid builder
-
-- quadtree / octtree: rebuild minDepth, maxDepth, maxItemsPerLeaf, heterogen (divide as required and not at center)
-## Network
-
-- server
+* [Audio](projects/audio/README.md)
+* [Core](projects/core/README.md)
+* [Game 2d](projects/game2d/README.md)
+* [Game 3d](projects/game3d/README.md)
+* [Network](projects/network/README.md)
+* [Showcase](projects/showcase/README.md)
