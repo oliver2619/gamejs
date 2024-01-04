@@ -12,19 +12,26 @@ export class PromisesProgress {
 
     private readonly promise: Promise<number>;
 
-    private completedCallback: ((loaded: number) => void) | undefined;
-    private rejectedCallback: ((reason: Error) => void) | undefined;
+    private completedCallback: Array<(loaded: number) => void> = [];
+    private rejectedCallback: Array<(reason: Error) => void> = [];
     private loading = 0;
     private completed = 0;
+    private error: Error | undefined;
 
     constructor() {
         this.promise = new Promise<number>((completed, rejected) => {
-            this.completedCallback = completed;
-            this.rejectedCallback = rejected;
+            this.completedCallback.push(completed);
+            this.rejectedCallback.push(rejected);
+            if (this.loading === 0) {
+                completed(this.completed);
+            }
+            else if (this.error != undefined) {
+                rejected(this.error);
+            }
         });
     }
 
-    add(promise: Promise<any>): Promise<any> {
+    add<T>(promise: Promise<T>): Promise<T> {
         ++this.loading;
         this.produceOnProgressEvent();
         return promise.then(it => {
@@ -32,14 +39,15 @@ export class PromisesProgress {
             ++this.completed;
             this.produceOnProgressEvent();
             if (this.loading === 0) {
-                setTimeout(() => this.completedCallback!(this.completed), 1);
+                setTimeout(() => this.completedCallback.forEach(it => it(this.completed)), 1);
             }
             return it;
         }, reason => {
+            this.error = reason;
             --this.loading;
             this.onError.produce(reason);
-            this.rejectedCallback!(reason);
-        });
+            this.rejectedCallback.forEach(it => it(reason));
+        }) as Promise<T>;
     }
 
     wait(): Promise<number> {

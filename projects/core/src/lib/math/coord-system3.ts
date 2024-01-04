@@ -35,6 +35,27 @@ export abstract class ReadonlyCoordSystem3 {
 		}
 	}
 
+	clone(): CoordSystem3 {
+		return new CoordSystem3({
+			position: this._position,
+			axis: { x: this._xAxis, y: this._yAxis, z: this._zAxis }
+		});
+	}
+
+	getRotated(angle: ReadonlyVector3): CoordSystem3 {
+		return new CoordSystem3({
+			position: this._position,
+			axis: { x: this._xAxis.getRotated(angle), y: this._yAxis.getRotated(angle), z: this._zAxis.getRotated(angle) }
+		});
+	}
+
+	getScaled(f: number): CoordSystem3 {
+		return new CoordSystem3({
+			position: this._position,
+			axis: { x: this._xAxis.getScaled(f), y: this._yAxis.getScaled(f), z: this._zAxis.getScaled(f) }
+		});
+	}
+
 	globalToLocal(point: ReadonlyVector3): Vector3 {
 		let diff = point.getDifference(this._position);
 		return new Vector3(
@@ -112,13 +133,6 @@ export class CoordSystem3 extends ReadonlyCoordSystem3 {
 		this._xAxis.onModify.subscribe(modifyCallback);
 		this._yAxis.onModify.subscribe(modifyCallback);
 		this._zAxis.onModify.subscribe(modifyCallback);
-	}
-
-	clone(): CoordSystem3 {
-		return new CoordSystem3({
-			position: this._position,
-			axis: { x: this._xAxis, y: this._yAxis, z: this._zAxis }
-		});
 	}
 
 	lookAt(target: ReadonlyVector3, up: ReadonlyVector3): void {

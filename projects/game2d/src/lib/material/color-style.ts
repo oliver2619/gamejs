@@ -1,4 +1,4 @@
-import { Color, ReadonlyColor } from "projects/core/src/public-api";
+import { Color, ReadonlyColor } from "core";
 import { PaintStyle } from "./paint-style";
 
 export interface ColorStyleData {

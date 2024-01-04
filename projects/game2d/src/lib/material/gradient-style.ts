@@ -1,4 +1,4 @@
-import { ReadonlyColor } from "projects/core/src/public-api";
+import { ReadonlyColor } from "core";
 import { ColorStops, ColorStopsArray, ColorStopsData } from "../render/color-stops";
 import { PaintStyle } from "./paint-style";
 

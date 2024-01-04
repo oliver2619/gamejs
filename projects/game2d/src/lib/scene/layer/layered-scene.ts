@@ -1,3 +1,4 @@
+import { GarbageCollectibleObject } from 'core';
 import { Background } from "../background/background";
 import { EmptyBackground } from "../background/empty-background";
 import { RenderingContext2d } from "../../render/rendering-context2d";
@@ -5,7 +6,6 @@ import { Filter } from "../../render/filter";
 import { Camera2 } from "../camera2";
 import { PostEffect } from "../post-effect/post-effect";
 import { EmptyPostEffect } from "../post-effect/empty-post-effect";
-import { GarbageCollectibleObject } from 'projects/core/src/public-api';
 import { Layer } from './layer';
 
 export class LayeredScene {

@@ -1,4 +1,4 @@
-import { EventObservable } from "projects/core/src/public-api";
+import { EventObservable } from "core";
 import { DynamicBody, DynamicBodyData } from "./dynamic-body";
 
 export interface AnimatedBodyPreAnimateEvent {

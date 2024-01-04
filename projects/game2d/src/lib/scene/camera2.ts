@@ -1,4 +1,4 @@
-import { Box2, CoordSystem2, CoordSystem2Data, ReadonlyBox2, ReadonlyVector2, Vector2 } from 'projects/core/src/public-api';
+import { Box2, CoordSystem2, CoordSystem2Data, ReadonlyBox2, ReadonlyVector2, Vector2 } from 'core';
 import { RenderingContext2d } from "../render/rendering-context2d";
 
 export interface Camera2Data extends CoordSystem2Data {

@@ -1,4 +1,4 @@
-import { EventObservable } from "projects/core/src/public-api";
+import { EventObservable } from "core";
 import { PhysicsMaterial } from "./physics-material";
 
 export interface BodyCollisionEvent {

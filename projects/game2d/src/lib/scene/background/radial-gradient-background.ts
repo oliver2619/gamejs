@@ -1,5 +1,5 @@
+import { ReadonlyVector2, Vector2 } from "core";
 import { RenderingContext2d } from "../../render/rendering-context2d";
-import { ReadonlyVector2, Vector2 } from "projects/core/src/public-api";
 import { GradientBackground, GradientBackgroundData } from "./gradient-background";
 
 export interface RadialGradientBackgroundData extends GradientBackgroundData {

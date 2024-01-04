@@ -1,4 +1,4 @@
-import { EventObservable, ReadonlyVector2 } from "projects/core/src/public-api";
+import { EventObservable, ReadonlyVector2 } from "core";
 import { Body } from "./body";
 import { CollisionMnemento } from "./collision-mnemento";
 import { DynamicBody, DynamicBodyData } from "./dynamic-body";

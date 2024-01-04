@@ -1,6 +1,5 @@
-import { ReadonlyVector2, Vector2 } from "projects/core/src/public-api";
+import { ReadonlyVector2, Vector2 } from "core";
 import { GradientStyle, GradientStyleData } from "./gradient-style";
-import { PaintStyle } from "./paint-style";
 
 export interface RadialGradientStyleData extends GradientStyleData {
 
@@ -50,7 +49,7 @@ export class RadialGradientStyle extends GradientStyle {
         this.endPosition.onModify.subscribe(() => this.setModified());
     }
 
-    clone(): PaintStyle {
+    clone(): RadialGradientStyle {
         return new RadialGradientStyle({ startPosition: this.startPosition, startRadius: this._startRadius, endPosition: this.endPosition, endRadius: this._endRadius, stops: this.colorStops });
     }
 

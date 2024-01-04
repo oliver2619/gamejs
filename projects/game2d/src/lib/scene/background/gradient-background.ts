@@ -1,5 +1,5 @@
+import { ReadonlyColor, Vector2 } from "core";
 import { RenderingContext2d } from "../../render/rendering-context2d";
-import { ReadonlyColor, Vector2 } from "projects/core/src/public-api";
 import { Background } from "./background";
 import { ColorStops, ColorStopsData } from "../../render/color-stops";
 

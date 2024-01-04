@@ -1,4 +1,4 @@
-import {ReferencedObject} from 'projects/core/src/public-api';
+import {ReferencedObject} from 'core';
 import {RenderingContext2d} from "../../render/rendering-context2d";
 
 export interface PostEffect extends ReferencedObject {

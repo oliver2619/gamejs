@@ -1,5 +1,5 @@
+import {ReferencedObject} from "core";
 import {RenderingContext2d} from "../../render/rendering-context2d";
-import {ReferencedObject} from "projects/core/src/public-api";
 
 export interface Background extends ReferencedObject {
 

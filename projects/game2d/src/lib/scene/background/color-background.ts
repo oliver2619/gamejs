@@ -1,5 +1,5 @@
+import { Color, ReadonlyColor } from 'core';
 import { Background } from "./background";
-import { Color, ReadonlyColor } from 'projects/core/src/public-api';
 import { RenderingContext2d } from "../../render/rendering-context2d";
 
 export class ColorBackground implements Background {

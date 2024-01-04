@@ -1,5 +1,5 @@
+import { Box2, ReadonlyRectangle, Rectangle } from "core";
 import { RenderingContext2d } from "../../render/rendering-context2d";
-import { Box2, ReadonlyRectangle, Rectangle } from "projects/core/src/public-api";
 import { Solid2, Solid2Data } from "./solid2";
 import { TextMaterial } from "../../material/text-material";
 import { TextHAlign, TextVAlign } from "../../render/text-align";

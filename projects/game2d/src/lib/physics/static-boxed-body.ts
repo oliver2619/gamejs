@@ -1,4 +1,4 @@
-import { Box3, ReadonlyBox2, ReadonlyBox3 } from "projects/core/src/public-api";
+import { Box3, ReadonlyBox2, ReadonlyBox3 } from "core";
 import { StaticBody, StaticBodyData } from "./static-body";
 
 export abstract class StaticBoxedBody extends StaticBody {

@@ -1,5 +1,5 @@
+import { GarbageCollectibleObject, ImageResource } from "core";
 import { RenderingContext2d } from "../../render/rendering-context2d";
-import { GarbageCollectibleObject, ImageResource } from "projects/core/src/public-api";
 import { ImagePlacement } from "../../render/image-placement";
 import { PostEffect } from "./post-effect";
 import { CompositeOperation } from "../../render/composite-operation";

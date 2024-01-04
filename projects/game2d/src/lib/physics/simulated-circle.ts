@@ -1,4 +1,4 @@
-import { Box2 } from "projects/core/src/public-api";
+import { Box2 } from "core";
 import { CollisionMnemento } from "./collision-mnemento";
 import { DynamicBodyData } from "./dynamic-body";
 import { SimulatedBody } from "./simulated-body";

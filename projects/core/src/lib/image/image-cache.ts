@@ -8,12 +8,21 @@ class Item {
 
     readonly promise: Promise<ImageResource>;
 
+    private imageResource: ImageResource | undefined;
+    private error: Error | undefined;
+    private resolveCallbacks: Array<(value: ImageResource) => void> = [];
+    private rejectCallbacks: Array<(reason: Error) => void> = [];
+
     constructor(url: string, alpha: ImageCacheAlphaOperation, multiImageSize: number, progress: PromisesProgress, onDispose: () => void) {
-        let resolveCallback: (value: ImageResource) => void;
-        let rejectCallback: (reason: Error) => void;
         const promise = new Promise<ImageResource>((resolve, reject) => {
-            resolveCallback = resolve;
-            rejectCallback = reject;
+            if (this.imageResource != undefined) {
+                resolve(this.imageResource);
+            } else if (this.error != undefined) {
+                reject(this.error);
+            } else {
+                this.resolveCallbacks.push(resolve);
+                this.rejectCallbacks.push(reject);
+            }
         });
         this.promise = progress.add(promise);
         const image = new Image();
@@ -21,21 +30,37 @@ class Item {
         image.addEventListener('load', () => {
             switch (alpha) {
                 case 'auto':
-                    resolveCallback(new ImageResource(image, ImageFilters.isTransparent(image), multiImageSize, onDispose));
+                    this.imageResource = new ImageResource(image, ImageFilters.isTransparent(image), multiImageSize, onDispose);
                     break;
                 case 'keepAlpha':
-                    resolveCallback(new ImageResource(image, true, multiImageSize, onDispose));
+                    this.imageResource = new ImageResource(image, true, multiImageSize, onDispose);
                     break;
                 case 'keepNoAlpha':
-                    resolveCallback(new ImageResource(image, false, multiImageSize, onDispose));
+                    this.imageResource = new ImageResource(image, false, multiImageSize, onDispose);
                     break;
                 case 'removeAlpha':
-                    resolveCallback(new ImageResource(ImageFilters.toImage(ImageFilters.removeAlphaFromImage(image), false), false, multiImageSize, onDispose));
+                    this.imageResource = new ImageResource(ImageFilters.toImage(ImageFilters.removeAlphaFromImage(image), false), false, multiImageSize, onDispose);
+                    break;
+                default:
+                    this.error = new RangeError(`Illegal alpha operation ${alpha}`);
             }
+            this.callAndClearCallbacks();
         });
-        image.addEventListener('error', () => rejectCallback(new Error(`Failed to load image ${url}`)));
+        image.addEventListener('error', () => {
+            this.error = new Error(`Failed to load image ${url}`);
+            this.callAndClearCallbacks();
+        });
     }
 
+    private callAndClearCallbacks() {
+        if (this.imageResource != undefined) {
+            this.resolveCallbacks.forEach(it => it(this.imageResource!));
+        } else if (this.error != undefined) {
+            this.rejectCallbacks.forEach(it => it(this.error!));
+        }
+        this.rejectCallbacks.splice(0, this.rejectCallbacks.length);
+        this.resolveCallbacks.splice(0, this.resolveCallbacks.length);
+    }
 }
 
 interface ImageDefinition {
@@ -69,12 +94,12 @@ export class ImageCache {
     }
 
     get(name: string): Promise<ImageResource> {
-        const def = this.definitions.get(name);
-        if (def == undefined) {
-            throw new RangeError(`No URL defined for image ${name}`);
-        }
         const ret = this.items.get(name);
         if (ret == undefined) {
+            const def = this.definitions.get(name);
+            if (def == undefined) {
+                throw new RangeError(`No URL defined for image ${name}`);
+            }
             const newItem = new Item(def.url, def.alpha, def.multiImageSize, this.progress, () => {
                 this.items.delete(name);
             });

@@ -1,4 +1,4 @@
-import { ReadonlyVector2, Vector2 } from "projects/core/src/public-api";
+import { ReadonlyVector2, Vector2 } from "core";
 import { BufferedLayer } from "../layer/buffered-layer";
 
 export interface OcclusionTestData {

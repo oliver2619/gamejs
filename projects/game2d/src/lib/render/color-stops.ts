@@ -1,4 +1,4 @@
-import { Color, EventObservable, ReadonlyColor } from "projects/core/src/public-api";
+import { Color, EventObservable, ReadonlyColor } from "core";
 
 export type ColorStopsArray = Array<{ color: ReadonlyColor; offset: number; }>;
 

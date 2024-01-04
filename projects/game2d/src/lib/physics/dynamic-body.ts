@@ -1,4 +1,4 @@
-import { Box3, CoordSystem2, ReadonlyBox2, ReadonlyBox3, ReadonlyVector2, Vector2, Vector3 } from "projects/core/src/public-api";
+import { Box3, CoordSystem2, ReadonlyBox2, ReadonlyBox3, ReadonlyVector2, Vector2, Vector3 } from "core";
 import { Body, BodyData } from "./body";
 
 export interface DynamicBodyData extends BodyData {

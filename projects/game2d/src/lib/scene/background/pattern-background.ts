@@ -1,4 +1,4 @@
-import { GarbageCollectibleObject } from "projects/core/src/public-api";
+import { GarbageCollectibleObject } from "core";
 import { Background } from "./background";
 import { RenderingContext2d } from "../../render/rendering-context2d";
 import { Filter } from "../../render/filter";

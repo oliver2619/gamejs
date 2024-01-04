@@ -1,8 +1,13 @@
-import { GarbageCollectibleObject, ReferencedObject } from "projects/core/src/public-api";
+import { EventObservable, GarbageCollectibleObject, ReferencedObject } from "core";
 
 export abstract class PaintStyle implements ReferencedObject {
 
-    private readonly reference = new GarbageCollectibleObject(() => this.onDispose());
+    readonly onReleaseLastReference = new EventObservable<void>();
+
+    private readonly reference = new GarbageCollectibleObject(() => {
+        this.onDispose();
+        this.onReleaseLastReference.produce();
+    });
 
     get hasReferences(): boolean {
         return this.reference.hasReferences;

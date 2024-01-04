@@ -1,4 +1,4 @@
-import { ReadonlyVector2, ReadonlyVector3, Vector3 } from "projects/core/src/public-api";
+import { ReadonlyVector2, ReadonlyVector3, Vector3 } from "core";
 import { CollisionMnemento } from "./collision-mnemento";
 import { SimulatedCircle } from "./simulated-circle";
 import { StaticBody, StaticBodyData } from "./static-body";

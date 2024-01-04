@@ -1,4 +1,4 @@
-import { EventObservable } from "projects/core/src/public-api";
+import { EventObservable } from "core";
 import { Material, MaterialData } from "./material";
 
 export interface TextMaterialData extends MaterialData {

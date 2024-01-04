@@ -1,4 +1,4 @@
-import { ImageResource } from "projects/core/src/public-api";
+import { ImageResource } from "core";
 import { RenderingContext2d } from "./rendering-context2d";
 
 export interface RenderToImageData {

@@ -29,6 +29,27 @@ export abstract class ReadonlyCoordSystem2 {
         }
     }
 
+    clone(): CoordSystem2 {
+        return new CoordSystem2({
+            position: this._position,
+            axis: { x: this._xAxis, y: this._yAxis }
+        });
+    }
+
+    getRotated(angle: number): CoordSystem2 {
+        return new CoordSystem2({
+            position: this._position,
+            axis: { x: this._xAxis.getRotated(angle), y: this._yAxis.getRotated(angle) }
+        });
+    }
+
+    getScaled(f: number): CoordSystem2 {
+        return new CoordSystem2({
+            position: this._position,
+            axis: { x: this._xAxis.getScaled(f), y: this._yAxis.getScaled(f) }
+        });
+    }
+
     globalToLocal(point: ReadonlyVector2): Vector2 {
         let diff = point.getDifference(this._position);
         return new Vector2(
@@ -104,7 +125,7 @@ export class CoordSystem2 extends ReadonlyCoordSystem2 {
     }
 
     set rotation(r: number) {
-        this.batchModify(()=> {
+        this.batchModify(() => {
             const cs = Math.cos(r);
             const sn = Math.sin(r);
             this._xAxis.set(cs, sn);
@@ -118,13 +139,6 @@ export class CoordSystem2 extends ReadonlyCoordSystem2 {
         this._position.onModify.subscribe(modifyCallback);
         this._xAxis.onModify.subscribe(modifyCallback);
         this._yAxis.onModify.subscribe(modifyCallback);
-    }
-
-    clone(): CoordSystem2 {
-        return new CoordSystem2({
-            position: this._position,
-            axis: { x: this._xAxis, y: this._yAxis }
-        });
     }
 
     resetRotation(): void {

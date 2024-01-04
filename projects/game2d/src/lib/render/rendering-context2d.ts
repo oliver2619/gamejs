@@ -1,4 +1,4 @@
-import { ReadonlyBox2, ReadonlyRectangle, ReadonlyVector2, Vector2 } from "projects/core/src/public-api";
+import { ReadonlyBox2, ReadonlyRectangle, ReadonlyVector2, Vector2 } from "core";
 import { Filter } from "./filter";
 import { ImagePlacement } from "./image-placement";
 import { TextHAlign, TextVAlign } from './text-align';

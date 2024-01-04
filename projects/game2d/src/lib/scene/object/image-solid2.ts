@@ -1,5 +1,5 @@
+import { Box2, ImageResource, ReadonlyVector2, Vector2 } from "core";
 import { RenderingContext2d } from "../../render/rendering-context2d";
-import { Box2, ImageResource, ReadonlyVector2, Vector2 } from "projects/core/src/public-api";
 import { Solid2, Solid2Data } from "./solid2";
 
 export interface ImageSolid2Data extends Solid2Data {

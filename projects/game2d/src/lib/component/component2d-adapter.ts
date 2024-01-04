@@ -1,5 +1,5 @@
+import { ComponentAdapter, ComponentAdapterData } from "core";
 import { RenderingContext2d, RenderingContext2dData } from "../render/rendering-context2d";
-import { ComponentAdapter, ComponentAdapterData } from "projects/core/src/public-api";
 import { ComponentViewport } from './viewport';
 
 export interface Component2dAdapterData extends ComponentAdapterData, RenderingContext2dData {

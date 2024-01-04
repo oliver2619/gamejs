@@ -23,7 +23,7 @@ export class PatternStyle extends PaintStyle {
         this._pattern.addReference(this);
     }
 
-    clone(): PaintStyle {
+    clone(): PatternStyle {
         return new PatternStyle(this._pattern);
     }
 

@@ -1,4 +1,4 @@
-import { ReadonlyBox2 } from "projects/core/src/public-api";
+import { ReadonlyBox2 } from "core";
 
 export class PathObject {
 

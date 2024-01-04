@@ -1,16 +1,17 @@
 import { RenderingContext2d } from "../render/rendering-context2d";
-import { CoordSystem2, GarbageCollectibleObject, ImageResource, ReferencedObject } from "projects/core/src/public-api";
+import { CoordSystem2, GarbageCollectibleObject, ImageResource, ReadonlyCoordSystem2, ReferencedObject } from "core";
 
 export type ImagePatternRepetition = 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat';
 
 export interface ImagePatternData {
     readonly repetition?: ImagePatternRepetition;
     readonly image: ImageResource;
+    readonly transform?: ReadonlyCoordSystem2
 }
 
 export class ImagePattern implements ReferencedObject {
 
-    readonly transform = new CoordSystem2({});
+    readonly transform: CoordSystem2;
 
     repetition: ImagePatternRepetition;
 
@@ -46,6 +47,8 @@ export class ImagePattern implements ReferencedObject {
         this._image = data.image;
         this.repetition = data.repetition == undefined ? 'repeat' : data.repetition;
         this._image.addReference(this);
+        this.transform = data.transform == undefined ? new CoordSystem2({}) : data.transform.clone();
+        this.onTransformChange();
         this.transform.onModify.subscribe(() => this.onTransformChange());
     }
 

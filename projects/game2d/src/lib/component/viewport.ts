@@ -1,4 +1,4 @@
-import { GarbageCollectibleObject, ReadonlyVector2, Rectangle, ReferencedObject } from "projects/core/src/public-api";
+import { GarbageCollectibleObject, ReadonlyVector2, Rectangle, ReferencedObject } from "core";
 import { RenderingContext2d } from "../render/rendering-context2d";
 import { Camera2 } from "../scene/camera2";
 import { Scene2d } from "../scene/scene2d";

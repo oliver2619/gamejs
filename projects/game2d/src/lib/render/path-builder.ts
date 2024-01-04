@@ -1,4 +1,4 @@
-import { Box2, ReadonlyVector2 } from "projects/core/src/public-api";
+import { Box2, ReadonlyVector2 } from "core";
 import { PathObject } from "./path-object";
 
 export class PathBuilder {
@@ -29,6 +29,7 @@ export class PathBuilder {
     }
 
     circle(x: number, y: number, r: number): PathBuilder {
+        this.path.moveTo(x + r, -y);
         this.path.ellipse(x, -y, r, r, 0, 0, Math.PI * 2);
         this.boundingBox.extend(x - r, y - r);
         this.boundingBox.extend(x + r, y + r);

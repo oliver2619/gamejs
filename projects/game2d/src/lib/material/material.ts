@@ -1,4 +1,4 @@
-import { ReferencedObject, GarbageCollectibleObject } from 'projects/core/src/public-api';
+import { ReferencedObject, GarbageCollectibleObject } from 'core';
 import { LineStyle } from './line-style';
 import { PaintStyle } from './paint-style';
 
@@ -7,6 +7,7 @@ export interface MaterialData {
     readonly fill?: PaintStyle;
     readonly stroke?: PaintStyle;
     readonly line?: LineStyle;
+    readonly onDispose?: () => void;
 }
 
 export class Material implements ReferencedObject {
@@ -14,6 +15,8 @@ export class Material implements ReferencedObject {
     alpha: number;
 
     private readonly reference = new GarbageCollectibleObject(() => this.onDispose());
+
+    private readonly _onDispose: (() => void) | undefined;
 
     private _fill: PaintStyle | undefined;
     private _stroke: PaintStyle | undefined;
@@ -62,6 +65,7 @@ export class Material implements ReferencedObject {
         this._line = data?.line == undefined ? new LineStyle() : data.line;
         this._fill?.addReference(this);
         this._stroke?.addReference(this);
+        this._onDispose = data?.onDispose;
     }
 
     addReference(holder: any) {
@@ -96,5 +100,8 @@ export class Material implements ReferencedObject {
     private onDispose() {
         this._fill?.releaseReference(this);
         this._stroke?.releaseReference(this);
+        if (this._onDispose != undefined) {
+            this._onDispose();
+        }
     }
 }

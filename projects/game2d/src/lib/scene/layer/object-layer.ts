@@ -1,9 +1,9 @@
+import { Box2, QuadTree } from "core";
 import { RenderingContext2d } from "../../render/rendering-context2d";
 import { Filter } from "../../render/filter";
 import { Camera2 } from "../camera2";
 import { Layer } from "./layer";
 import { Object2 } from "../object/object2";
-import { Box2, QuadTree } from "projects/core/src/public-api";
 import { Solid2 } from "../object/solid2";
 
 class ObjectItem {

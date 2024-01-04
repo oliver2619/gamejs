@@ -1,6 +1,6 @@
+import { Color, ReadonlyColor } from "core";
 import { PostEffect } from "./post-effect";
 import { CompositeOperation } from "../../render/composite-operation";
-import { Color, ReadonlyColor } from "projects/core/src/public-api";
 import { RenderingContext2d } from "../../render/rendering-context2d";
 
 export interface ColorPostEffectData {

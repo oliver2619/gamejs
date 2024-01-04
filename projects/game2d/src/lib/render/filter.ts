@@ -1,4 +1,4 @@
-import { Box2, Color, EventObservable, ReadonlyColor } from 'projects/core/src/public-api';
+import { Box2, Color, EventObservable, ReadonlyColor } from 'core';
 
 class FilterElement {
 

@@ -1,4 +1,4 @@
-import { ReadonlyColor, Vector2 } from "projects/core/src/public-api";
+import { ReadonlyColor, Vector2 } from "core";
 import { ColorStops, ColorStopsData } from "../../render/color-stops";
 import { CompositeOperation } from "../../render/composite-operation";
 import { RenderingContext2d } from "../../render/rendering-context2d";

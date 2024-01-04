@@ -1,4 +1,4 @@
-import { Box2, ReadonlyVector2 } from "projects/core/src/public-api";
+import { Box2, ReadonlyVector2 } from "core";
 import { CollisionMnemento } from "./collision-mnemento";
 import { SimulatedCircle } from "./simulated-circle";
 import { StaticBodyData } from "./static-body";

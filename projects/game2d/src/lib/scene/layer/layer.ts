@@ -1,5 +1,5 @@
+import { GarbageCollectibleObject, ReferencedObject } from "core";
 import { RenderingContext2d } from "../../render/rendering-context2d";
-import { GarbageCollectibleObject, ReferencedObject } from "projects/core/src/public-api";
 import { Camera2 } from "../camera2";
 
 export abstract class Layer implements ReferencedObject {

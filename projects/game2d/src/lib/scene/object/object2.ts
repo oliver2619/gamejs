@@ -1,5 +1,5 @@
+import { Box2, CoordSystem2, CoordSystem2Data, EventObservable, GarbageCollectibleObject, ReferencedObject } from 'core';
 import { RenderingContext2d } from '../../render/rendering-context2d';
-import { Box2, CoordSystem2, CoordSystem2Data, EventObservable, GarbageCollectibleObject, ReferencedObject } from 'projects/core/src/public-api';
 import { Solid2 } from "./solid2";
 
 export interface Object2Data extends CoordSystem2Data {

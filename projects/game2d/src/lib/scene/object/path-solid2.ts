@@ -1,4 +1,4 @@
-import { Box2 } from "projects/core/src/public-api";
+import { Box2 } from "core";
 import { Material } from "../../material";
 import { PathObject, RenderingContext2d } from "../../render";
 import { Solid2, Solid2Data } from "./solid2";

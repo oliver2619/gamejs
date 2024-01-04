@@ -1,4 +1,4 @@
-import { OctTree, ReadonlyVector2, Vector2 } from "projects/core/src/public-api";
+import { OctTree, ReadonlyVector2, Vector2 } from "core";
 import { AnimatedBody } from "./animated-body";
 import { CollisionMnemento } from "./collision-mnemento";
 import { SimulatedBody } from "./simulated-body";

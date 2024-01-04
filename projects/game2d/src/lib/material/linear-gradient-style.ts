@@ -1,6 +1,5 @@
-import { ReadonlyVector2, Vector2 } from "projects/core/src/public-api";
+import { ReadonlyVector2, Vector2 } from "core";
 import { GradientStyle, GradientStyleData } from "./gradient-style";
-import { PaintStyle } from "./paint-style";
 
 export interface LinearGradientStyleData extends GradientStyleData {
 
@@ -21,7 +20,7 @@ export class LinearGradientStyle extends GradientStyle {
         this.end.onModify.subscribe(() => this.setModified());
     }
 
-    clone(): PaintStyle {
+    clone(): LinearGradientStyle {
         return new LinearGradientStyle({ start: this.start, end: this.end, stops: this.colorStops });
     }
 

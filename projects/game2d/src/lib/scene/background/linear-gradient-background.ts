@@ -1,4 +1,4 @@
-import { ReadonlyVector2, Vector2 } from "projects/core/src/public-api";
+import { ReadonlyVector2, Vector2 } from "core";
 import { RenderingContext2d } from "../../render/rendering-context2d";
 import { GradientBackground, GradientBackgroundData } from "./gradient-background";
 

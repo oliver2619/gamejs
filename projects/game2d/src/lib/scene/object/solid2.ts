@@ -1,5 +1,5 @@
+import { Box2, EventObservable, GarbageCollectibleObject, ReadonlyBox2, ReadonlyVector2, ReferencedObject } from "core";
 import { RenderingContext2d } from "../../render/rendering-context2d";
-import { Box2, EventObservable, GarbageCollectibleObject, ReadonlyBox2, ReadonlyVector2, ReferencedObject } from "projects/core/src/public-api";
 import { Filter } from "../../render/filter";
 import { CompositeOperation } from "../../render/composite-operation";
 import { PathObject } from "../../render";
