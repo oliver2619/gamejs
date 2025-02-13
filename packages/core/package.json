@@ -1,0 +1,23 @@
+{
+    "name": "@pluto/core",
+    "version": "0.0.1",
+    "description": "",
+
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "files": ["dist"],
+
+    "scripts": {
+        "build": "tsup"
+    },
+
+    "keywords": [],
+    "author": "oliver2619",
+    "license": "MIT",
+
+    "devDependencies": {
+        "tsup": "^8.3.6",
+        "typescript": "^5.7.3"
+    }
+}

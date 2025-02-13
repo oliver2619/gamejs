@@ -1,0 +1,20 @@
+{
+    "name": "@pluto/showcase",
+    "version": "0.0.1",
+    "description": "",
+    "scripts": {
+        "build": "vite build",
+        "start": "vite dev"
+    },
+    "keywords": [],
+    "author": "oliver2619",
+    "license": "MIT",
+    "devDependencies": {
+        "typescript": "^5.7.3",
+        "vite": "^6.1.0"
+    },
+    "dependencies": {
+        "@pluto/3d": "^0.0.1",
+        "@pluto/core": "^0.0.1"
+    }
+}
