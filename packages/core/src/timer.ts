@@ -1,4 +1,5 @@
-import { EventObservable, Observable } from "./observable";
+import { EventObservable } from "./observable/event-observable";
+import { Observable } from "./observable/observable";
 
 interface TimerImp {
 

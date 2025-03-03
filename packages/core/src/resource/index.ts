@@ -1,3 +1,2 @@
-export * from './image-resource';
-export * from './image-resources';
+export * from './json-loader';
 export * from './promises-progress';
