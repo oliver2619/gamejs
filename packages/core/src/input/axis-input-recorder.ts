@@ -64,7 +64,7 @@ export class AxisInputRecorder {
         this.cancel();
     };
 
-    constructor(data: AxisInputRecorderData) {
+    constructor(data: Readonly<AxisInputRecorderData>) {
         this.gamepad = data.gamepad;
         this.halfAxis = data.halfAxis ?? false;
         this.input = data.input;

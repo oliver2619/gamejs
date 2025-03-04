@@ -324,7 +324,7 @@ export class QuadTree<E> {
         }
     }
 
-    rebuild(data?: { minBox?: ReadonlyBox2d, minNumberOfElements?: number }) {
+    rebuild(data?: { minBox?: ReadonlyBox2d | undefined, minNumberOfElements?: number | undefined }) {
         this._boundingBox.clear();
         if (data != undefined && data.minBox != undefined) {
             this._boundingBox.extendByBox(data.minBox);

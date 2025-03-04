@@ -1,5 +1,6 @@
 import { Animation, AnimationBuilder } from "../animation";
-import { ReferencedObject, ReferencedObjects } from "../reference";
+import { ReferencedObjects } from "../reference";
+import { AbstractReferencedObject } from "../reference/abstract-referenced-object";
 import { Timer } from "../timer";
 
 export interface CanvasAdapterData {
@@ -9,13 +10,12 @@ export interface CanvasAdapterData {
     alignTo?: HTMLElement;
 }
 
-export abstract class CanvasAdapter implements ReferencedObject {
+export abstract class CanvasAdapter extends AbstractReferencedObject {
 
     readonly canvas: HTMLCanvasElement;
 
     private readonly timer: Timer;
     private readonly animations = AnimationBuilder.parallel().build();
-    private readonly referencedObject = ReferencedObjects.create(() => this.onReleasedLastReference());
     private readonly resizeObserverAlignedElement: ResizeObserver | undefined;
     private readonly resizeObserverCanvas = new ResizeObserver(() => this.onCanvasSizeChanged());
 
@@ -52,7 +52,8 @@ export abstract class CanvasAdapter implements ReferencedObject {
         }
     }
 
-    protected constructor(data: CanvasAdapterData) {
+    protected constructor(data: Readonly<CanvasAdapterData>) {
+        super();
         this.canvas = data.canvas;
         this._fullscreen = data.fullscreen ?? false;
         this.timer = new Timer({ fps: data.fps, disabled: true });
@@ -66,20 +67,12 @@ export abstract class CanvasAdapter implements ReferencedObject {
             this.resizeObserverAlignedElement = new ResizeObserver(() => this.alignCanvasToElement(alignedElement));
             this.resizeObserverAlignedElement.observe(alignedElement, { box: 'content-box' });
         }
-        this.resizeObserverCanvas.observe(this.canvas, {box: 'content-box'});
+        this.resizeObserverCanvas.observe(this.canvas, { box: 'content-box' });
     }
 
     addAnimation(animation: Animation) {
         this.animations.addAnimation(animation);
         this.timer.enabled = true;
-    }
-
-    addReference(owner: any): void {
-        this.referencedObject.addReference(owner);
-    }
-
-    releaseReference(owner: any): void {
-        this.referencedObject.releaseReference(owner);
     }
 
     render() {
@@ -102,7 +95,7 @@ export abstract class CanvasAdapter implements ReferencedObject {
     private onCanvasSizeChanged() {
         const w = this.canvas.clientWidth;
         const h = this.canvas.clientHeight;
-        if(w !== this.canvas.width ||h !== this.canvas.height) {
+        if (w !== this.canvas.width || h !== this.canvas.height) {
             this.canvas.width = w;
             this.canvas.height = h;
             this.onResize();
@@ -113,7 +106,7 @@ export abstract class CanvasAdapter implements ReferencedObject {
         this.updateFullscreen();
     };
 
-    private onReleasedLastReference() {
+    protected onDelete() {
         this.timer.onTimer.unsubscribe(this);
         this.canvas.removeEventListener('click', this.onClick, { capture: true });
         this.resizeObserverCanvas.disconnect();

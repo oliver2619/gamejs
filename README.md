@@ -1,7 +1,5 @@
 # gamejs
 
-Check all:
-* constructor(data: Readonly<Data>)
 
 ## Core
 
@@ -10,18 +8,9 @@ Check all:
 
 ## 2d
 
-* Camera2d
-* ObjectLayer
-* Object2
-* GradientBackground
-* LinearGradientBackground
-* RadialGradientBackground
-* Material2dCache
-
+Check all constructor(data: Readonly<Data>)
 * Loader
 * Physics
-* Scene Post effects
-
 * RenderingContext2d
 
 ## 3d

@@ -74,7 +74,7 @@ export class ButtonInputRecorder {
         this.cancel();
     };
 
-    constructor(data: ButtonInputRecorderData) {
+    constructor(data: Readonly<ButtonInputRecorderData>) {
         this.mouse = data.mouse;
         this.keyboard = data.keyboard;
         this.gamepad = data.gamepad;

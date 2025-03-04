@@ -2,9 +2,9 @@ import { Box2d, ReadonlyBox2d } from "./box-2d";
 import { ReadonlyVector2d, Vector2d } from "./vector-2d";
 
 export interface ReadonlyCoordSystem2d {
-    readonly position: Vector2d;
-    readonly xAxis: Vector2d;
-    readonly yAxis: Vector2d;
+    readonly position: ReadonlyVector2d;
+    readonly xAxis: ReadonlyVector2d;
+    readonly yAxis: ReadonlyVector2d;
     readonly rotation: number;
     clone(): CoordSystem2d;
     getRotated(angle: number): CoordSystem2d;
@@ -38,7 +38,7 @@ export class CoordSystem2d implements ReadonlyCoordSystem2d {
         this.yAxis.set(-sn, cs);
     }
 
-    constructor(data?: CoordSystem2dData) {
+    constructor(data?: Readonly<CoordSystem2dData>) {
         this.position = data?.position?.clone() ?? new Vector2d(0, 0);
         if (data == undefined || data.axis == undefined) {
             this.xAxis = new Vector2d(1, 0);

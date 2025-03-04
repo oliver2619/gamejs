@@ -1,16 +1,15 @@
 import { ReadonlyRectangle, Rectangle } from "../math/rectangle";
 import { ReadonlyVector2d } from "../math/vector-2d";
-import { ReferencedObject, ReferencedObjects } from "../reference";
+import { AbstractReferencedObject } from "../reference/abstract-referenced-object";
 
 const defaultMapping = (size: ReadonlyVector2d) => {
     return new Rectangle(0, 0, size.x, size.y);
 }
 
-export abstract class Viewport implements ReferencedObject {
+export abstract class Viewport extends AbstractReferencedObject {
 
     mapping: (size: ReadonlyVector2d) => Rectangle;
 
-    private readonly referencedObject = ReferencedObjects.create(() => this.onDestroy());
     private readonly _rectangle = new Rectangle(0, 0, 0, 0);
 
     get rectangle(): ReadonlyRectangle {
@@ -18,11 +17,8 @@ export abstract class Viewport implements ReferencedObject {
     }
 
     constructor(mapping?: (size: ReadonlyVector2d) => Rectangle) {
+        super();
         this.mapping = mapping ?? defaultMapping;
-    }
-
-    addReference(owner: any): void {
-        this.referencedObject.addReference(owner);
     }
 
     recalcViewportRect(canvasSize: ReadonlyVector2d): boolean {
@@ -36,13 +32,7 @@ export abstract class Viewport implements ReferencedObject {
         }
     }
 
-    releaseReference(owner: any): void {
-        this.referencedObject.releaseReference(owner);
-    }
-
     setDefaultMapping() {
         this.mapping = defaultMapping;
     }
-
-    protected abstract onDestroy(): void;
 }

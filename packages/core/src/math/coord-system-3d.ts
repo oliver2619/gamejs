@@ -6,11 +6,11 @@ export interface CoordSystem3dData {
 }
 
 export interface ReadonlyCoordSystem3d {
-	readonly position: Vector3d;
-	readonly xAxis: Vector3d;
-	readonly yAxis: Vector3d;
-	readonly zAxis: Vector3d;
-	readonly lookDirection: Vector3d;
+	readonly position: ReadonlyVector3d;
+	readonly xAxis: ReadonlyVector3d;
+	readonly yAxis: ReadonlyVector3d;
+	readonly zAxis: ReadonlyVector3d;
+	readonly lookDirection: ReadonlyVector3d;
 	clone(): CoordSystem3d;
 	getRotated(angle: ReadonlyVector3d): CoordSystem3d;
 	getScaled(f: number): CoordSystem3d;
@@ -31,7 +31,7 @@ export class CoordSystem3d implements ReadonlyCoordSystem3d {
 		return this.zAxis.getScaled(-1);
 	}
 
-	constructor(data: CoordSystem3dData) {
+	constructor(data: Readonly<CoordSystem3dData>) {
 		this.position = data?.position?.clone() ?? new Vector3d(0, 0, 0);
 		if (data.axis !== undefined) {
 			this.xAxis = data.axis.x.clone();

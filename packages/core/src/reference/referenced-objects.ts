@@ -1,3 +1,4 @@
+import { EventObservable } from "../observable/event-observable";
 import { ReferencedObject } from "./referenced-object";
 
 enum ReferencedObjectState {
@@ -8,6 +9,7 @@ const allUnreferencedObjects = new Set<DefaultReferencedObject>();
 
 class DefaultReferencedObject implements ReferencedObject {
 
+    readonly onPostDelete = new EventObservable<void>();
     private readonly referenceByOwner = new Map<any, number>();
     private state: ReferencedObjectState = ReferencedObjectState.CREATED;
 
@@ -32,6 +34,7 @@ class DefaultReferencedObject implements ReferencedObject {
     delete() {
         this.state = ReferencedObjectState.DELETED;
         this.onDelete();
+        this.onPostDelete.next();
     }
 
     releaseReference(owner: any): void {
@@ -55,8 +58,8 @@ export class ReferencedObjects {
 
     private constructor() { }
 
-    static create(onDelete: () => void): ReferencedObject {
-        return new DefaultReferencedObject(onDelete);
+    static create(onDelete?: () => void): ReferencedObject {
+        return new DefaultReferencedObject(onDelete ?? (() => { }));
     }
 
     static deleteSomeUnreferenced(factor: number) {

@@ -5,7 +5,7 @@ class ImageCacheElement {
 
     private result: Promise<ImageResource> | undefined;
 
-    constructor(private readonly url: string, private alpha: boolean | undefined, private multiImageSize: number, private readonly onDestroyCallback?: () => void) { }
+    constructor(private readonly url: string, private alpha: boolean | undefined, private multiImageSize: number, private readonly onDeleteCallback?: () => void) { }
 
     get(): Promise<ImageResource> {
         if (this.result == undefined) {
@@ -16,15 +16,19 @@ class ImageCacheElement {
                 reject = r2;
             });
             const img = document.createElement('img');
-            img.onload = () => resolve(new ImageResource(new ImageObject(img, this.alpha), this.multiImageSize, () => this.onDestroy()));
+            img.onload = () => {
+                const imgRes = new ImageResource(new ImageObject(img, this.alpha), this.multiImageSize);
+                imgRes.onPostDelete.subscribeOnce(() => this.onDelete());
+                resolve(imgRes);
+            };
             img.onerror = (_1: Event | string, _2?: string, _3?: number, _4?: number, error?: Error) => {
                 if (error == undefined) {
                     reject(`Failed to load image ${this.url}.`);
                 } else {
                     reject(`Failed to load image ${this.url}. ${error.name}: ${error.message}`);
                 }
-                if (this.onDestroyCallback != undefined) {
-                    this.onDestroyCallback();
+                if (this.onDeleteCallback != undefined) {
+                    this.onDeleteCallback();
                 }
             };
             img.src = this.url;
@@ -34,10 +38,10 @@ class ImageCacheElement {
         }
     }
 
-    private onDestroy() {
+    private onDelete() {
         this.result = undefined;
-        if (this.onDestroyCallback != undefined) {
-            this.onDestroyCallback();
+        if (this.onDeleteCallback != undefined) {
+            this.onDeleteCallback();
         }
     }
 }
