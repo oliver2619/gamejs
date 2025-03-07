@@ -1,3 +1,4 @@
+import { PromisesProgress } from "../resource";
 import { ImageObject } from "./image-object";
 import { ImageResource } from "./image-resource";
 
@@ -32,7 +33,7 @@ class ImageCacheElement {
                 }
             };
             img.src = this.url;
-            return this.result;
+            return PromisesProgress.add(this.result);
         } else {
             return this.result;
         }

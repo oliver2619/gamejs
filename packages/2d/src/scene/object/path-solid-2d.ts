@@ -5,9 +5,9 @@ import { Solid2d, Solid2dData } from "./solid-2d";
 
 export interface PathSolid2dData extends Solid2dData {
     path: PathObject;
-    fill?: CanvasFillRule;
-    stroke?: boolean;
-    material?: Material2d;
+    fill?: CanvasFillRule | undefined;
+    stroke?: boolean | undefined;
+    material?: Material2d | undefined;
 }
 
 export class PathSolid2d extends Solid2d {
@@ -51,6 +51,21 @@ export class PathSolid2d extends Solid2d {
         if (this.fill == undefined && this.stroke === false) {
             console.warn('Path will neither be stroked nor filled');
         }
+    }
+
+    clone(): PathSolid2d {
+        return new PathSolid2d({
+            name: this.name,
+            alpha: this.alpha,
+            blendOperation: this.blendOperation,
+            visible: this.visible,
+            filter: this.filter,
+            clipPath: this.clipPath,
+            path: this._path,
+            material: this.material,
+            fill: this.fill,
+            stroke: this.stroke
+        });
     }
 
     protected calculateBoundingBox(box: Box2d) {

@@ -1,7 +1,7 @@
 export interface PhysicsMaterialData {
-    readonly bounciness?: number;
-    readonly friction?: number;
-    readonly enabled?: boolean;
+    bounciness?: number;
+    friction?: number;
+    enabled?: boolean;
 }
 
 export class PhysicsMaterial {
@@ -10,7 +10,7 @@ export class PhysicsMaterial {
     friction: number;
     enabled: boolean;
 
-    constructor(data?: PhysicsMaterialData) {
+    constructor(data?: Readonly<PhysicsMaterialData>) {
         this.bounciness = data == undefined || data.bounciness == undefined ? 1 : data.bounciness;
         this.friction = data == undefined || data.friction == undefined ? 1 : data.friction;
         this.enabled = data == undefined || data.enabled == undefined ? true : data.enabled;

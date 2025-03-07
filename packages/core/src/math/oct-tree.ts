@@ -420,7 +420,7 @@ export class OctTree<E> {
         }
     }
 
-    rebuild(data?: { minBox?: ReadonlyBox3d, minNumberOfElements?: number }) {
+    rebuild(data?: { minBox?: ReadonlyBox3d | undefined, minNumberOfElements?: number | undefined }) {
         this._boundingBox.clear();
         if (data != undefined && data.minBox != undefined) {
             this._boundingBox.extendByBox(data.minBox);

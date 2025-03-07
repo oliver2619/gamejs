@@ -1,27 +1,26 @@
-import {ReadonlyVector2} from "core";
-import {CollisionMnemento} from "./collision-mnemento";
-import {SimulatedCircle} from "./simulated-circle";
-import {StaticBody, StaticBodyData} from "./static-body";
-import {ForceConstraints} from "./force-constraints";
+import { CollisionMnemento } from "./collision-mnemento";
+import { DynamicCircle } from "./dynamic-circle";
+import { StaticBody, StaticBodyData } from "./static-body";
+import { ForceConstraints } from "./force-constraints";
+import { ReadonlyVector2d } from "@pluto/core";
 
 export interface StaticLineData extends StaticBodyData {
-
-    readonly point: ReadonlyVector2;
-    readonly normal: ReadonlyVector2;
+    point: ReadonlyVector2d;
+    normal: ReadonlyVector2d;
 }
 
 export class StaticLine extends StaticBody {
 
     readonly offset: number;
-    readonly normal: ReadonlyVector2;
+    readonly normal: ReadonlyVector2d;
 
-    constructor(data: StaticLineData) {
+    constructor(data: Readonly<StaticLineData>) {
         super(data);
         this.normal = data.normal.getNormalized();
         this.offset = data.point.getDotProduct(this.normal);
     }
 
-    getCollisionWithCircle(circle: SimulatedCircle, mnemento: CollisionMnemento) {
+    getCollisionWithCircle(circle: DynamicCircle, mnemento: CollisionMnemento) {
         const speedDotProduct = circle.speed.getDotProduct(this.normal);
         if (speedDotProduct === 0) {
             return;
@@ -36,7 +35,7 @@ export class StaticLine extends StaticBody {
         mnemento.add(t, () => circle.collideAtSurface(this.normal, circle.object.position.getSumScaled(this.normal, -signedDistance), this));
     }
 
-    getStaticForceConstraintForCircle(circle: SimulatedCircle, constraints: ForceConstraints) {
+    getStaticForceConstraintForCircle(circle: DynamicCircle, constraints: ForceConstraints) {
         const signedDistance = circle.object.position.getDotProduct(this.normal) - this.offset;
         if (Math.abs(signedDistance) <= circle.radius) {
             if (signedDistance > 0) {
@@ -45,5 +44,11 @@ export class StaticLine extends StaticBody {
                 constraints.addPlane(this.normal.getScaled(-1), circle.radius + signedDistance);
             }
         }
+    }
+
+    protected onRender(context: CanvasRenderingContext2D) {
+        context.beginPath();
+        context.moveTo(this.offset * this.normal.x - this.normal.y * 1000, -this.offset * this.normal.y - this.normal.x * 1000);
+        context.lineTo(this.offset * this.normal.x + this.normal.y * 1000, -this.offset * this.normal.y + this.normal.x * 1000);
     }
 }

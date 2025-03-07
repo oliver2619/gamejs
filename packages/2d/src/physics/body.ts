@@ -1,4 +1,4 @@
-import { EventObservable } from "core";
+import { EventObservable } from "@pluto/core";
 import { PhysicsMaterial } from "./physics-material";
 
 export interface BodyCollisionEvent {
@@ -7,11 +7,10 @@ export interface BodyCollisionEvent {
 }
 
 export interface BodyData {
-
-    readonly enabled?: boolean;
-    readonly material?: PhysicsMaterial;
-    readonly z?: number;
-    readonly zDepth?: number;
+    enabled?: boolean;
+    material?: PhysicsMaterial;
+    z?: number;
+    zDepth?: number;
 }
 
 export abstract class Body {
@@ -24,7 +23,7 @@ export abstract class Body {
     z: number;
     zDepth: number;
 
-    constructor(data: BodyData) {
+    constructor(data: Readonly<BodyData>) {
         this.material = data.material == undefined ? new PhysicsMaterial() : data.material;
         this.enabled = data.enabled == undefined ? true : data.enabled;
         this.z = data.z == undefined ? 0 : data.z;

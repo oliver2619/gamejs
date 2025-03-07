@@ -53,7 +53,7 @@ interface MaterialDefinition {
 
 type PaintStyleDefinition = () => Promise<PaintStyle>;
 
-export class MaterialCache {
+export class Material2dCache {
 
     private static readonly materialDefinitions = new Map<string, MaterialDefinition>();
     private static readonly materials = new Map<string, Material2dElement>();
@@ -95,7 +95,7 @@ export class MaterialCache {
 
     static registerMaterial(name: string, data: { alpha?: number, line?: LineStyle, stroke?: string, fill?: string }) {
         if (data.stroke == undefined && data.fill == undefined) {
-            console.warn('Neither fill nor stroke style is set. Resulting material will be invisible.');
+            console.warn(`Neither fill nor stroke style is set. Material '${name}' will be invisible.`);
         }
         const def: MaterialDefinition = {
             alpha: data.alpha,

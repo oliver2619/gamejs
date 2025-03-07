@@ -1,2 +1,2 @@
-export * from './json-loader';
 export * from './promises-progress';
+export * from './resource-loader';

@@ -1,4 +1,4 @@
-import { AbstractReferencedObject, Box2d, EventObservable, Observable, ReadonlyBox2d, ReadonlyVector2d} from "@pluto/core";
+import { AbstractReferencedObject, Box2d, EventObservable, Observable, ReadonlyBox2d, ReadonlyVector2d } from "@pluto/core";
 import { Filter, FilterStack } from "../../render/filter";
 import { PathObject } from "../../render/path-object";
 import { Object2dPart } from "./object-2d-part";
@@ -8,24 +8,27 @@ import { RenderingContext2d } from "../../component/rendering-context-2d";
 import { BufferedLayer } from "../layer/buffered-layer";
 
 export interface Solid2dData {
-    alpha?: number;
-    clipPath?: PathObject;
-    blendOperation?: Blend2dOperation;
-    filter?: Filter;
-    visible?: boolean;
+    alpha?: number | undefined;
+    clipPath?: PathObject | undefined;
+    blendOperation?: Blend2dOperation | undefined;
+    filter?: Filter | undefined;
+    visible?: boolean | undefined;
+    name?: string | undefined;
 }
 
 export abstract class Solid2d extends AbstractReferencedObject implements Object2dPart {
 
-    private readonly _onBoundingBoxChanged = new EventObservable<void>();
-    private readonly _onVisibilityChanged = new EventObservable<void>();
+    readonly name: string | undefined;
 
-    private _filter: Filter;
     alpha: number;
     blendOperation: Blend2dOperation | undefined;
 
     // TODO shadow
 
+    private readonly _onBoundingBoxChanged = new EventObservable<void>();
+    private readonly _onVisibilityChanged = new EventObservable<void>();
+
+    private _filter: Filter;
     private _visible: boolean;
     private boundingBoxModified = true;
     private _boundingBox = Box2d.empty();
@@ -86,12 +89,15 @@ export abstract class Solid2d extends AbstractReferencedObject implements Object
 
     constructor(data: Readonly<Solid2dData>) {
         super();
+        this.name = data.name;
         this.alpha = data.alpha ?? 1;
         this._clipPath = data.clipPath;
         this.blendOperation = data.blendOperation;
         this._visible = data.visible == undefined ? true : data.visible;
         this._filter = data.filter == undefined ? FilterStack.createDefaultFilter() : { ...data.filter };
     }
+
+    abstract clone(): Solid2d;
 
     render() {
         if (this._visible) {

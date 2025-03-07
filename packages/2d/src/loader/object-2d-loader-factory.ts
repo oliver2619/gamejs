@@ -1,11 +1,11 @@
-import { ObjectLoader, ObjectLoaderData } from "./object-loader";
+import { Object2dLoader, Object2dLoaderData } from "./object-2d-loader";
 import { SvgLoader } from "./svg/svg-loader";
 
-export class ObjectLoaderFactory {
+export class Object2dLoaderFactory {
 
-    constructor(private readonly data: Readonly<ObjectLoaderData>) { }
+    constructor(private readonly data: Readonly<Object2dLoaderData>) { }
 
-    getObjectLoader(url: string): ObjectLoader {
+    getObjectLoader(url: string): Object2dLoader {
         if (url.toLowerCase().endsWith('.svg')) {
             return new SvgLoader(this.data);
         } else {

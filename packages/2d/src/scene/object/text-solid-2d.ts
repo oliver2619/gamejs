@@ -31,12 +31,13 @@ export class TextSolid2d extends Solid2d {
 
     set material(m: TextMaterial) {
         if (this._textMaterial !== m) {
-            this._textMaterial.onChange.unsubscribe(this);
+            // this._textMaterial.onChange.unsubscribe(this);
             this._textMaterial.releaseReference(this);
             this._textMaterial = m;
-            this._textMaterial.onChange.subscribe(this, () => this.setBoundingBoxModified());
+            // this._textMaterial.onChange.subscribe(this, () => this.setBoundingBoxModified());
             this._textMaterial.addReference(this);
-            this.setBoundingBoxModified();
+            // TODO do we really need to update, if the font changes? Bounding box depends only on the rectangle.
+            // this.setBoundingBoxModified();
         }
     }
 
@@ -62,7 +63,7 @@ export class TextSolid2d extends Solid2d {
         }
     }
 
-    constructor(data: TextSolid2dData) {
+    constructor(data: Readonly<TextSolid2dData>) {
         super(data);
         this._text = data.text;
         this.fill = data.fill ?? false;
@@ -71,8 +72,27 @@ export class TextSolid2d extends Solid2d {
         this.vAlign = data.vAlign ?? TextVAlign.CENTER;
         this._rectangle = data.rectangle.clone();
         this._textMaterial = data.material ?? new TextMaterial();
-        this._textMaterial.onChange.subscribe(this, () => this.setBoundingBoxModified());
+        // TODO do we really need to update, if the font changes? Bounding box depends only on the rectangle.
+        // this._textMaterial.onChange.subscribe(this, () => this.setBoundingBoxModified());
         this._textMaterial.addReference(this);
+    }
+
+    clone(): TextSolid2d {
+        return new TextSolid2d({
+            name: this.name,
+            alpha: this.alpha,
+            clipPath: this.clipPath,
+            blendOperation: this.blendOperation,
+            filter: this.filter,
+            visible: this.visible,
+            text: this._text,
+            fill: this.fill,
+            stroke: this.stroke,
+            hAlign: this.hAlign,
+            vAlign: this.vAlign,
+            rectangle: this._rectangle,
+            material: this._textMaterial,
+        });
     }
 
     protected calculateBoundingBox(box: Box2d) {
@@ -81,7 +101,7 @@ export class TextSolid2d extends Solid2d {
     }
 
     protected onDelete() {
-        this._textMaterial.onChange.unsubscribe(this);
+        // this._textMaterial.onChange.unsubscribe(this);
         this._textMaterial.releaseReference(this);
     }
 

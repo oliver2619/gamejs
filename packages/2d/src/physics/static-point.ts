@@ -1,28 +1,27 @@
-import { ReadonlyVector2, ReadonlyVector3, Vector3 } from "core";
 import { CollisionMnemento } from "./collision-mnemento";
-import { SimulatedCircle } from "./simulated-circle";
+import { DynamicCircle } from "./dynamic-circle";
 import { StaticBody, StaticBodyData } from "./static-body";
 import { ForceConstraints } from "./force-constraints";
+import { ReadonlyVector2d, ReadonlyVector3d, Vector3d } from "core";
 
 export interface StaticPointData extends StaticBodyData {
-
-    readonly position: ReadonlyVector2;
+    position: ReadonlyVector2d;
 }
 
 export class StaticPoint extends StaticBody {
 
-    readonly position: ReadonlyVector2;
+    readonly position: ReadonlyVector2d;
 
-    get pointIn3d(): ReadonlyVector3 {
-        return new Vector3(this.position.x, this.position.y, this.z);
+    get pointIn3d(): ReadonlyVector3d {
+        return new Vector3d(this.position.x, this.position.y, this.z);
     }
 
-    constructor(data: StaticPointData) {
+    constructor(data: Readonly<StaticPointData>) {
         super(data);
         this.position = data.position.clone();
     }
 
-    getCollisionWithCircle(circle: SimulatedCircle, mnemento: CollisionMnemento) {
+    getCollisionWithCircle(circle: DynamicCircle, mnemento: CollisionMnemento) {
         const deltaPos = circle.object.position.getDifference(this.position);
         const a = circle.speed.squareLength;
         if (a === 0) {
@@ -38,11 +37,19 @@ export class StaticPoint extends StaticBody {
         mnemento.add(t, () => circle.collideAtSurface(circle.object.position.getDifference(this.position).getNormalized(), this.position, this));
     }
 
-    getStaticForceConstraintForCircle(circle: SimulatedCircle, constraints: ForceConstraints) {
+    getStaticForceConstraintForCircle(circle: DynamicCircle, constraints: ForceConstraints) {
         const deltaPos = circle.object.position.getDifference(this.position);
         const squareDist = deltaPos.squareLength;
         if (squareDist <= circle.radius * circle.radius && squareDist > 0) {
             constraints.addPlane(deltaPos.getScaled(1 / Math.sqrt(squareDist)), circle.radius - Math.sqrt(squareDist));
         }
+    }
+
+    protected onRender(context: CanvasRenderingContext2D) {
+        context.beginPath();
+        context.moveTo(this.position.x - 3, -this.position.y - 3);
+        context.lineTo(this.position.x + 3, -this.position.y + 3);
+        context.moveTo(this.position.x - 3, -this.position.y + 3);
+        context.lineTo(this.position.x + 3, -this.position.y - 3);
     }
 }

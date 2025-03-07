@@ -56,6 +56,10 @@ class DefaultReferencedObject implements ReferencedObject {
 
 export class ReferencedObjects {
 
+    get gcSize(): number {
+        return allUnreferencedObjects.size;
+    }
+
     private constructor() { }
 
     static create(onDelete?: () => void): ReferencedObject {

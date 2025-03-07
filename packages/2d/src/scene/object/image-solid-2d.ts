@@ -4,10 +4,9 @@ import { RenderingContext2d } from "../../component/rendering-context-2d";
 
 export interface ImageSolid2dData extends Solid2dData {
     image: ImageResource;
-    alpha?: number;
-    position?: ReadonlyVector2d;
-    scale?: number;
-    index?: number;
+    position?: ReadonlyVector2d | undefined;
+    scale?: number | undefined;
+    index?: number | undefined;
 }
 
 export class ImageSolid2d extends Solid2d {
@@ -56,14 +55,28 @@ export class ImageSolid2d extends Solid2d {
         }
     }
 
-    constructor(data: ImageSolid2dData) {
+    constructor(data: Readonly<ImageSolid2dData>) {
         super(data);
         this._image = data.image;
-        this.alpha = data.alpha ?? 1;
         this._position = data.position?.clone() ?? new Vector2d(0, 0);
         this._scale = data.scale ?? 1;
         this.index = data.index ?? 0;
         this._image.addReference(this);
+    }
+
+    clone(): ImageSolid2d {
+        return new ImageSolid2d({
+            name: this.name,
+            image: this._image,
+            alpha: this.alpha,
+            blendOperation: this.blendOperation,
+            clipPath: this.clipPath,
+            filter: this.filter,
+            index: this.index,
+            position: this._position,
+            scale: this._scale,
+            visible: this.visible
+        });
     }
 
     protected calculateBoundingBox(box: Box2d) {

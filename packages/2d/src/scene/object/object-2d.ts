@@ -5,26 +5,29 @@ import { Material2d } from "../../material";
 import { RenderingContext2d } from "../../component/rendering-context-2d";
 
 export interface Object2Data extends CoordSystem2dData {
-    readonly alpha?: number;
-    readonly blendOperation?: Blend2dOperation;
-    readonly material?: Material2d;
-    readonly visible?: boolean;
+    readonly name?: string | undefined;
+    readonly alpha?: number | undefined;
+    readonly blendOperation?: Blend2dOperation | undefined;
+    readonly material?: Material2d | undefined;
+    readonly visible?: boolean | undefined;
 }
 
 export class Object2d extends AbstractReferencedObject implements Object2dPart {
+
+    readonly name: string | undefined;
 
     alpha: number;
     blendOperation: Blend2dOperation | undefined;
 
     private readonly _onBoundingBoxChanged = new EventObservable<void>();
     private readonly _onVisibilityChanged = new EventObservable<void>();
-    private readonly parts: Object2dPart[] = [];
     private readonly _boundingBox = Box2d.empty();
 
     private _material: Material2d | undefined;
     private _visible: boolean;
     private boundingBoxModified = false;
     private _coordSystem: CoordSystem2d;
+    private _parts: Object2dPart[] = [];
 
     get boundingBox(): ReadonlyBox2d {
         if (this.boundingBoxModified) {
@@ -58,6 +61,10 @@ export class Object2d extends AbstractReferencedObject implements Object2dPart {
         return this._onVisibilityChanged;
     }
 
+    get parts(): Object2dPart[] {
+        return this._parts.slice(0);
+    }
+
     get visible(): boolean {
         return this._visible;
     }
@@ -71,6 +78,7 @@ export class Object2d extends AbstractReferencedObject implements Object2dPart {
 
     constructor(data?: Readonly<Object2Data>) {
         super();
+        this.name = data?.name;
         this._coordSystem = new CoordSystem2d(data);
         this.alpha = data?.alpha ?? 1;
         this.blendOperation = data?.blendOperation;
@@ -79,13 +87,8 @@ export class Object2d extends AbstractReferencedObject implements Object2dPart {
         this._material?.addReference(this);
     }
 
-    updateCoordSystem(callback: (coordSystem: CoordSystem2d) => CoordSystem2d) {
-        this._coordSystem = callback(this._coordSystem);
-        this.updateBoundingBox();
-    }
-
     add(obj: Object2dPart) {
-        this.parts.push(obj);
+        this._parts.push(obj);
         obj.addReference(this);
         obj.onBoundingBoxChanged.subscribe(this, () => {
             if (obj.visible) {
@@ -98,6 +101,20 @@ export class Object2d extends AbstractReferencedObject implements Object2dPart {
         }
     }
 
+    clone(): Object2d {
+        const ret = new Object2d({
+            name: this.name,
+            axis: { x: this._coordSystem.xAxis, y: this._coordSystem.yAxis },
+            position: this._coordSystem.position,
+            alpha: this.alpha,
+            blendOperation: this.blendOperation,
+            visible: this._visible,
+            material: this._material,
+        });
+        ret._parts = this._parts.map(it => it.clone());
+        return ret;
+    }
+
     render(): void {
         if (this._visible) {
             RenderingContext2d.renderSafely(ctx => {
@@ -107,14 +124,19 @@ export class Object2d extends AbstractReferencedObject implements Object2dPart {
                 if (this.blendOperation != undefined) {
                     ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation.value;
                 }
-                this.parts.forEach(it => it.render());
+                this._parts.forEach(it => it.render());
             });
         }
     }
 
+    updateCoordSystem(callback: (coordSystem: CoordSystem2d) => CoordSystem2d) {
+        this._coordSystem = callback(this._coordSystem);
+        this.updateBoundingBox();
+    }
+
     private calculateBoundingBox() {
         const bb = Box2d.empty();
-        this.parts.forEach(it => {
+        this._parts.forEach(it => {
             if (it.visible) {
                 bb.extendByBox(it.boundingBox)
             }
@@ -124,7 +146,7 @@ export class Object2d extends AbstractReferencedObject implements Object2dPart {
 
     protected onDelete() {
         this._material?.releaseReference(this);
-        this.parts.forEach(it => {
+        this._parts.forEach(it => {
             it.releaseReference(this);
             it.onBoundingBoxChanged.unsubscribe(this);
             it.onVisibilityChanged.unsubscribe(this);

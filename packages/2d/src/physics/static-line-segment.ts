@@ -1,25 +1,25 @@
-import { Box2, ReadonlyVector2 } from "core";
 import { CollisionMnemento } from "./collision-mnemento";
-import { SimulatedCircle } from "./simulated-circle";
+import { DynamicCircle } from "./dynamic-circle";
 import { StaticBodyData } from "./static-body";
 import { StaticBoxedBody } from "./static-boxed-body";
 import { ForceConstraints } from "./force-constraints";
+import { Box2d, ReadonlyVector2d } from "@pluto/core";
 
 export interface StaticLineSegmentData extends StaticBodyData {
-    readonly p1: ReadonlyVector2;
-    readonly p2: ReadonlyVector2;
+    p1: ReadonlyVector2d;
+    p2: ReadonlyVector2d;
 }
 
 export class StaticLineSegment extends StaticBoxedBody {
 
-    readonly p1: ReadonlyVector2;
-    readonly p2: ReadonlyVector2;
-    readonly normal: ReadonlyVector2;
-    readonly tangent: ReadonlyVector2;
+    readonly p1: ReadonlyVector2d;
+    readonly p2: ReadonlyVector2d;
+    readonly normal: ReadonlyVector2d;
+    readonly tangent: ReadonlyVector2d;
     readonly offset: number;
     readonly length: number;
 
-    constructor(data: StaticLineSegmentData) {
+    constructor(data: Readonly<StaticLineSegmentData>) {
         super(data);
         this.p1 = data.p1.clone();
         this.p2 = data.p2.clone();
@@ -27,13 +27,13 @@ export class StaticLineSegment extends StaticBoxedBody {
         this.normal = data.p2.getDifference(data.p1).getNormalizedCrossProduct(1);
         this.offset = data.p1.getDotProduct(this.normal);
         this.length = data.p2.getDistance(data.p1);
-        const box = Box2.empty();
+        const box = Box2d.empty();
         box.extendByPoint(this.p1);
         box.extendByPoint(this.p2);
         this.postConstruct(box);
     }
 
-    getCollisionWithCircle(circle: SimulatedCircle, mnemento: CollisionMnemento) {
+    getCollisionWithCircle(circle: DynamicCircle, mnemento: CollisionMnemento) {
         const speedDotProduct = circle.speed.getDotProduct(this.normal);
         if (speedDotProduct === 0) {
             return;
@@ -51,7 +51,7 @@ export class StaticLineSegment extends StaticBoxedBody {
         }
     }
 
-    getStaticForceConstraintForCircle(circle: SimulatedCircle, constraints: ForceConstraints) {
+    getStaticForceConstraintForCircle(circle: DynamicCircle, constraints: ForceConstraints) {
         const signedDistance = circle.object.position.getDotProduct(this.normal) - this.offset;
         const tangentOffset = circle.object.position.getDifference(this.p1).getDotProduct(this.tangent);
         if (Math.abs(signedDistance) <= circle.radius && tangentOffset >= 0 && tangentOffset <= this.length) {
@@ -61,5 +61,11 @@ export class StaticLineSegment extends StaticBoxedBody {
                 constraints.addPlane(this.normal.getScaled(-1), circle.radius + signedDistance);
             }
         }
+    }
+
+    protected onRender(context: CanvasRenderingContext2D) {
+        context.beginPath();
+        context.moveTo(this.p1.x, -this.p1.y)
+        context.lineTo(this.p2.x, -this.p2.y)
     }
 }

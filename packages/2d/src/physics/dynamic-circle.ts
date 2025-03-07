@@ -1,7 +1,6 @@
-import { Box2 } from "core";
+import { Box2d } from "@pluto/core";
 import { CollisionMnemento } from "./collision-mnemento";
-import { DynamicBodyData } from "./dynamic-body";
-import { SimulatedBody } from "./simulated-body";
+import { DynamicBody, DynamicBodyData } from "./dynamic-body";
 import { StaticBody } from "./static-body";
 
 export class CircleRelativeMomentsOfInertia {
@@ -20,7 +19,7 @@ export interface DynamicCircleData extends DynamicBodyData {
     readonly relativeMomentOfInertia: number;
 }
 
-export class SimulatedCircle extends SimulatedBody {
+export class DynamicCircle extends DynamicBody {
 
     readonly radius: number;
 
@@ -34,10 +33,36 @@ export class SimulatedCircle extends SimulatedBody {
         super(data);
         this.radius = data.radius;
         this.relativeMomentOfInertia = data.relativeMomentOfInertia;
-        const box = Box2.empty();
+        const box = Box2d.empty();
         box.extendByPoint(data.object.position);
         box.extendEveryDirection(data.radius);
         this.postConstruct(box);
+    }
+
+    getCollisionWithCircle(circle: DynamicCircle, mnemento: CollisionMnemento): void {
+        const deltaPos = circle.position.getDifference(this.position);
+        const deltaSpeed = circle.speed.getDifference(this.speed);
+        const a = deltaSpeed.squareLength;
+        if (a === 0) {
+            return;
+        }
+        const b = deltaPos.getDotProduct(deltaSpeed);
+        const r = circle.radius + this.radius;
+        const c = deltaPos.squareLength - r * r;
+        const det = b * b - a * c;
+        if (det < 0) {
+            return;
+        }
+        const t = a > 0 ? (-b - Math.sqrt(det)) / a : (-b + Math.sqrt(det)) / a;
+        mnemento.add(t, () => {
+            const cn = circle.position.getDifference(this.position).withLength(this.radius);
+            this.collideWithOtherAt(this.position.getSum(cn), circle);
+        });
+
+    }
+
+    getDynamicCollision(body: DynamicBody, mnemento: CollisionMnemento): void {
+        body.getCollisionWithCircle(this, mnemento);
     }
 
     getStaticCollision(body: StaticBody, mnemento: CollisionMnemento) {

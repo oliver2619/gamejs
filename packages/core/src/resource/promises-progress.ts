@@ -8,23 +8,20 @@ export interface PromisesProgressEvent {
 
 export class PromisesProgress {
 
-    private readonly _onProgress = new EventObservable<PromisesProgressEvent>();
-    private total = 0;
-    private loaded = 0;
-    private result: Promise<void>;
-    private resolveCallback: (() => void) | undefined;
+    private static readonly _onProgress = new EventObservable<PromisesProgressEvent>();
+    private static total = 0;
+    private static loaded = 0;
+    private static result: Promise<void> = this.createResultPromise();
+    private static resolveCallback: (() => void) = () => { };
 
-    get onProgress(): Observable<PromisesProgressEvent> {
+    static get onProgress(): Observable<PromisesProgressEvent> {
         return this._onProgress;
     }
 
-    constructor() {
-        this.result = new Promise((resolve, _) => {
-            this.resolveCallback = resolve;
-        });
-    }
-
-    add<T>(promise: Promise<T>): Promise<T> {
+    static add<T>(promise: Promise<T>): Promise<T> {
+        if(this.total === this.loaded && this.total > 0) {
+            this.reset();
+        }
         ++this.total;
         this.onProgressChange();
         return promise.then(it => {
@@ -38,14 +35,26 @@ export class PromisesProgress {
         });
     }
 
-    wait(): Promise<void> {
+    static wait(): Promise<void> {
         return this.result;
     }
 
-    private onProgressChange() {
+    private static createResultPromise(): Promise<void> {
+        return new Promise((resolve, _) => {
+            this.resolveCallback = resolve;
+        });
+    }
+
+    private static onProgressChange() {
         this._onProgress.next({ loaded: this.loaded, total: this.total });
-        if (this.loaded === this.total && this.resolveCallback != undefined) {
+        if (this.loaded === this.total) {
             this.resolveCallback();
         }
+    }
+
+    private static reset() {
+        this.total -= this.loaded;
+        this.loaded = 0;
+        this.result = this.createResultPromise();
     }
 }
