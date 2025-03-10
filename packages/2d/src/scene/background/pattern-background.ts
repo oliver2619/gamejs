@@ -6,7 +6,7 @@ import { RenderingContext2d } from "../../component/rendering-context-2d";
 export interface PatternBackgroundData {
     readonly alpha?: number;
     readonly pattern: PatternStyle;
-    readonly filter?: Filter;
+    readonly filter?: Partial<Filter>;
 }
 
 export class PatternBackground extends Background {
@@ -31,7 +31,7 @@ export class PatternBackground extends Background {
     constructor(data: PatternBackgroundData) {
         super();
         this.alpha = data.alpha ?? 1;
-        this.filter = data.filter == undefined ? FilterStack.createDefaultFilter() : { ...data.filter };
+        this.filter = data.filter == undefined ? FilterStack.createDefaultFilter() : FilterStack.createPartialFilter(data.filter);
         this._pattern = data.pattern;
         this._pattern.addReference(this);
     }

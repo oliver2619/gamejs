@@ -3,6 +3,7 @@ import { Object2dPart } from "./object-2d-part";
 import { Blend2dOperation } from "../../render";
 import { Material2d } from "../../material";
 import { RenderingContext2d } from "../../component/rendering-context-2d";
+import { Object2dBase } from "../object-2d-base";
 
 export interface Object2Data extends CoordSystem2dData {
     readonly name?: string | undefined;
@@ -12,7 +13,7 @@ export interface Object2Data extends CoordSystem2dData {
     readonly visible?: boolean | undefined;
 }
 
-export class Object2d extends AbstractReferencedObject implements Object2dPart {
+export class Object2d extends AbstractReferencedObject implements Object2dPart, Object2dBase {
 
     readonly name: string | undefined;
 
@@ -129,8 +130,8 @@ export class Object2d extends AbstractReferencedObject implements Object2dPart {
         }
     }
 
-    updateCoordSystem(callback: (coordSystem: CoordSystem2d) => CoordSystem2d) {
-        this._coordSystem = callback(this._coordSystem);
+    updateCoordSystem(callback: (coordSystem: CoordSystem2d) => void) {
+        callback(this._coordSystem);
         this.updateBoundingBox();
     }
 

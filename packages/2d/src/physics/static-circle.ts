@@ -26,7 +26,7 @@ export class StaticCircle extends StaticBoxedBody {
     }
 
     getCollisionWithCircle(circle: DynamicCircle, mnemento: CollisionMnemento) {
-        const deltaPos = circle.object.position.getDifference(this.center);
+        const deltaPos = circle.object.coordSystem.position.getDifference(this.center);
         const a = circle.speed.squareLength;
         if (a === 0) {
             return;
@@ -40,13 +40,13 @@ export class StaticCircle extends StaticBoxedBody {
         }
         const t = a > 0 ? (-b - Math.sqrt(det)) / a : (-b + Math.sqrt(det)) / a;
         mnemento.add(t, () => {
-            const cn = circle.object.position.getDifference(this.center).getNormalized();
+            const cn = circle.object.coordSystem.position.getDifference(this.center).getNormalized();
             circle.collideAtSurface(cn, this.center.getSumScaled(cn, this.radius), this);
         });
     }
 
     getStaticForceConstraintForCircle(circle: DynamicCircle, constraints: ForceConstraints) {
-        const deltaPos = circle.object.position.getDifference(this.center);
+        const deltaPos = circle.object.coordSystem.position.getDifference(this.center);
         const r = circle.radius + this.radius;
         const squareDist = deltaPos.squareLength;
         if (squareDist <= r * r && squareDist > 0) {

@@ -38,22 +38,22 @@ export class StaticLineSegment extends StaticBoxedBody {
         if (speedDotProduct === 0) {
             return;
         }
-        const signedDistance = circle.object.position.getDotProduct(this.normal) - this.offset;
+        const signedDistance = circle.object.coordSystem.position.getDotProduct(this.normal) - this.offset;
         let t: number;
         if (speedDotProduct > 0) {
             t = (-circle.radius - signedDistance) / speedDotProduct;
         } else {
             t = (circle.radius - signedDistance) / speedDotProduct;
         }
-        const tangentOffset = circle.object.position.getDifference(this.p1).getSumScaled(circle.speed, t).getDotProduct(this.tangent);
+        const tangentOffset = circle.object.coordSystem.position.getDifference(this.p1).getSumScaled(circle.speed, t).getDotProduct(this.tangent);
         if (tangentOffset >= 0 && tangentOffset <= this.length) {
-            mnemento.add(t, () => circle.collideAtSurface(this.normal, circle.object.position.getSumScaled(this.normal, -signedDistance), this));
+            mnemento.add(t, () => circle.collideAtSurface(this.normal, circle.object.coordSystem.position.getSumScaled(this.normal, -signedDistance), this));
         }
     }
 
     getStaticForceConstraintForCircle(circle: DynamicCircle, constraints: ForceConstraints) {
-        const signedDistance = circle.object.position.getDotProduct(this.normal) - this.offset;
-        const tangentOffset = circle.object.position.getDifference(this.p1).getDotProduct(this.tangent);
+        const signedDistance = circle.object.coordSystem.position.getDotProduct(this.normal) - this.offset;
+        const tangentOffset = circle.object.coordSystem.position.getDifference(this.p1).getDotProduct(this.tangent);
         if (Math.abs(signedDistance) <= circle.radius && tangentOffset >= 0 && tangentOffset <= this.length) {
             if (signedDistance > 0) {
                 constraints.addPlane(this.normal, circle.radius - signedDistance);

@@ -8,13 +8,18 @@ export class FiniteAnimationBuilder {
     private _pause = 0;
     private _loopMode: AnimationLoopMode = AnimationLoopMode.BOTH;
     private _onFinished: ((remainingTimeout: number) => void) | undefined;
-    private _repetitions: number | undefined;
+    private _repetitions: number | undefined = 1;
     private _transitionFunction: TransitionFunction = TransitionFunctions.LINEAR;
 
     constructor(private readonly duration: number) { }
 
     delay(duration: number): FiniteAnimationBuilder {
         this._delay = duration;
+        return this;
+    }
+
+    infinite(): FiniteAnimationBuilder {
+        this._repetitions = undefined;
         return this;
     }
 

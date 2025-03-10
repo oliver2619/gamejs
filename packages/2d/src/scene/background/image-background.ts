@@ -6,7 +6,7 @@ import { Filter, FilterStack } from "../../render/filter";
 
 export interface ImageBackgroundData {
     readonly alpha?: number;
-    readonly filter?: Filter;
+    readonly filter?: Partial<Filter>;
     readonly image: ImageResource;
     readonly placement?: ImagePlacement;
 }
@@ -34,7 +34,7 @@ export class ImageBackground extends Background {
     constructor(data: ImageBackgroundData) {
         super();
         this.alpha = data.alpha == undefined ? 1 : data.alpha;
-        this.filter = data.filter == undefined ? FilterStack.createDefaultFilter() : { ...data.filter };
+        this.filter = data.filter == undefined ? FilterStack.createDefaultFilter() : FilterStack.createPartialFilter(data.filter);
         this._image = data.image;
         this.placement = data.placement ?? ImagePlacement.CENTER;
         this._image.addReference(this);
@@ -42,7 +42,7 @@ export class ImageBackground extends Background {
 
     render(): void {
         RenderingContext2d.withFilter(this.filter, (ctx) => {
-            if (this._image.isTransparent || this.alpha < 1 || (this.placement !== ImagePlacement.STRETCHED && this.placement !== ImagePlacement.SMOOTH_STRETCHED)) {
+            if (this._image.isTransparent || this.alpha < 1 || this.filter.opacity < 1 || (this.placement !== ImagePlacement.STRETCHED && this.placement !== ImagePlacement.SMOOTH_STRETCHED && this.placement !== ImagePlacement.MAX_SCALED && this.placement !== ImagePlacement.SMOOTH_MAX_SCALED)) {
                 ctx.clear()
             }
             ctx.canvasRenderingContext.globalAlpha *= this.alpha;

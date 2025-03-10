@@ -1,9 +1,9 @@
-import { ReadonlyVector2d, Rectangle, Viewport } from "@pluto/core";
+import { ReadonlyColor, ReadonlyVector2d, Rectangle, Viewport } from "@pluto/core";
 import { Scene2d } from "../scene/scene-2d";
 import { Camera2d } from "../scene/camera-2d";
 import { Context2d } from "./context-2d";
 import { RenderingContext2d } from "./rendering-context-2d";
-import { FilterStack } from "../render/filter";
+import { Filter, FilterStack } from "../render/filter";
 
 export class Viewport2d extends Viewport {
 
@@ -23,10 +23,10 @@ export class Viewport2d extends Viewport {
         }
     }
 
-    constructor(data: { scene: Scene2d, camera: Camera2d, filterStack?: FilterStack, mapping?: (size: ReadonlyVector2d) => Rectangle }) {
+    constructor(data: { scene: Scene2d, camera: Camera2d, filter?: Partial<Filter>, shadowColor?: ReadonlyColor, mapping?: (size: ReadonlyVector2d) => Rectangle }) {
         super(data.mapping);
         this.camera = data.camera;
-        this.filterStack = data.filterStack ?? new FilterStack();
+        this.filterStack = new FilterStack({ filter: data.filter, shadowColor: data.shadowColor });
         this._scene = data.scene;
         this._scene.addReference(this);
     }

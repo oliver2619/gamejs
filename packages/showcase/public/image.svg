@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   id="svg1"
+   width="793.70001"
+   height="1122.5"
+   version="1.1"
+   viewBox="0 0 210 297"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient1">
+      <stop
+         style="stop-color:#1ec3f0;stop-opacity:0.528;"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#fcff07;stop-opacity:1;"
+         offset="1"
+         id="stop2" />
+    </linearGradient>
+    <linearGradient
+       xlink:href="#linearGradient1"
+       id="linearGradient2"
+       x1="30.35778"
+       y1="146.91135"
+       x2="151.96655"
+       y2="146.91135"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       xlink:href="#linearGradient1"
+       id="linearGradient3"
+       gradientUnits="userSpaceOnUse"
+       x1="30.35778"
+       y1="146.91135"
+       x2="151.96655"
+       y2="146.91135" />
+    <linearGradient
+       xlink:href="#linearGradient1"
+       id="linearGradient4"
+       gradientUnits="userSpaceOnUse"
+       x1="30.35778"
+       y1="146.91135"
+       x2="151.96655"
+       y2="146.91135" />
+  </defs>
+  <g
+     id="layer1"
+     fill="#1ec3f0"
+     stroke-width="0.26458"
+     style="fill:url(#linearGradient2)">
+    <path
+       id="path28"
+       d="M 41.462899,121.87144 C 20.055103,121.87168 26.317167,68.487338 89.435664,68.298772 152.55416,68.110206 166.26556,121.87005 137.87996,121.87037 Z"
+       style="fill:url(#linearGradient3);stroke-width:0.264997" />
+    <path
+       id="a"
+       d="M 31.808404,225.52442 144.74898,224.8096 c 12.16617,-0.077 10.66402,-40.29553 -19.29939,-60.75819 -29.963414,-20.46267 -77.752177,-14.23454 -84.012048,15.59233 z"
+       style="fill:url(#linearGradient4)" />
+  </g>
+  <rect
+     id="rect1"
+     x="125.80336"
+     y="22.873617"
+     width="43.244999"
+     height="25.375"
+     fill="#1ec3f0"
+     stroke-width="0.40771" />
+</svg>

@@ -12,6 +12,7 @@ export interface ReadonlyColor {
     equals(other: ReadonlyColor): boolean;
     equalsRgb(other: ReadonlyColor): boolean;
     getClamped(): Color;
+    getDifference(other: ReadonlyColor): Color;
     getInverted(): Color;
     getMultiplied(c: ReadonlyColor): Color;
     getScaled(f: number): Color;
@@ -230,6 +231,10 @@ export class Color implements ReadonlyColor {
             this.g > 0 ? Math.min(1, this.g) : 0,
             this.b > 0 ? Math.min(1, this.b) : 0,
             this.a > 0 ? Math.min(1, this.a) : 0);
+    }
+
+    getDifference(c: ReadonlyColor): Color {
+        return new Color(this.r - c.r, this.g - c.g, this.b - c.b, this.a - c.a);
     }
 
     getInverted(): Color {

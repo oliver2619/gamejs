@@ -81,7 +81,7 @@ const combineMultiply = (v1: number, v2: number) => v1 * v2;
 const combineMultiplyInverse = (v1: number, v2: number) => v1 + v2 - v1 * v2;
 
 const allFilterElements: FilterElement[] = [
-    new NumberFilterElement('blur', 'blur', 0, 100, '%', combineAdd),
+    new NumberFilterElement('blur', 'blur', 0, 1, 'px', combineAdd),
     new NumberFilterElement('brightness', 'brightness', 1, 100, '%', combineMultiply),
     new NumberFilterElement('contrast', 'contrast', 1, 100, '%', combineMultiply),
     new NumberFilterElement('grayscale', 'grayscale', 0, 100, '%', combineMultiplyInverse),
@@ -93,12 +93,17 @@ const allFilterElements: FilterElement[] = [
     new ShadowFilterElement(),
 ];
 
+export interface FilterStackData {
+    filter?: Partial<Filter> | undefined,
+    shadowColor?: ReadonlyColor | undefined,
+}
+
 export class FilterStack {
 
-    private data: Filter = FilterStack.createDefaultFilter();
+    private data: Filter;
     private filter = '';
     private modified = false;
-    private _shadowColor = new Color(0, 0, 0, 1);
+    private _shadowColor;
 
     get blur(): number {
         return this.data.blur;
@@ -210,6 +215,12 @@ export class FilterStack {
         }
     }
 
+    constructor(data?: FilterStackData) {
+        this.data = data?.filter == undefined ? FilterStack.createDefaultFilter() : FilterStack.createPartialFilter(data.filter);
+        this._shadowColor = data?.shadowColor?.clone() ?? new Color(0, 0, 0, 1);
+        this.modified = true;
+    }
+
     static createDefaultFilter(): Filter {
         return {
             blur: 0,
@@ -223,6 +234,10 @@ export class FilterStack {
             sepia: 0,
             dropShadow: 0,
         };
+    }
+
+    static createPartialFilter(filter: Partial<Filter>): Filter {
+        return { ...this.createDefaultFilter(), ...filter };
     }
 
     use() {

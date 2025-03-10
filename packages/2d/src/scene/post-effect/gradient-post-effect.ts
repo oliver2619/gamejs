@@ -1,5 +1,5 @@
 import { ReadonlyColor, Vector2d } from "@pluto/core";
-import { ColorStops, ColorStopsData } from "../../material/color-stops";
+import { ColorStops, ColorStopsArray } from "../../material/color-stops";
 import { Blend2dOperation } from "../../render";
 import { PostEffect } from "./post-effect";
 import { RenderingContext2d } from "../../component/rendering-context-2d";
@@ -7,7 +7,7 @@ import { RenderingContext2d } from "../../component/rendering-context-2d";
 export interface GradientPostEffectData {
     alpha?: number;
     blendOperation?: Blend2dOperation;
-    colorStops: ColorStopsData;
+    colorStops: ColorStopsArray;
 }
 
 export abstract class GradientPostEffect extends PostEffect {

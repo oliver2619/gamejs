@@ -1,11 +1,11 @@
 import { ReadonlyColor, Vector2d } from "@pluto/core";
-import { ColorStops, ColorStopsData } from "../../material/color-stops";
+import { ColorStops, ColorStopsArray } from "../../material/color-stops";
 import { Background } from "./background";
 import { RenderingContext2d } from "../../component/rendering-context-2d";
 
 export interface GradientBackgroundData {
     alpha?: number;
-    colorStops: ColorStopsData;
+    colorStops: ColorStopsArray;
 }
 
 export abstract class GradientBackground extends Background {

@@ -1,12 +1,16 @@
 import { PromisesProgress } from "../resource";
+import { ImageFilters } from "./image-filters";
 import { ImageObject } from "./image-object";
 import { ImageResource } from "./image-resource";
 
+export enum ImageCacheAlphaOperation {
+    KEEP_TRANSPARENT, REMOVE_TRANSPARENCY, KEEP_OPAQUE, AUTO_DETECT
+}
 class ImageCacheElement {
 
     private result: Promise<ImageResource> | undefined;
 
-    constructor(private readonly url: string, private alpha: boolean | undefined, private multiImageSize: number, private readonly onDeleteCallback?: () => void) { }
+    constructor(private readonly url: string, private alpha: ImageCacheAlphaOperation, private multiImageSize: number, private readonly onDeleteCallback?: () => void) { }
 
     get(): Promise<ImageResource> {
         if (this.result == undefined) {
@@ -18,7 +22,21 @@ class ImageCacheElement {
             });
             const img = document.createElement('img');
             img.onload = () => {
-                const imgRes = new ImageResource(new ImageObject(img, this.alpha), this.multiImageSize);
+                let imgObj: ImageObject;
+                switch (this.alpha) {
+                    case ImageCacheAlphaOperation.AUTO_DETECT:
+                        imgObj = new ImageObject(img, undefined);
+                        break;
+                    case ImageCacheAlphaOperation.KEEP_OPAQUE:
+                        imgObj = new ImageObject(img, false);
+                        break;
+                    case ImageCacheAlphaOperation.KEEP_TRANSPARENT:
+                        imgObj = new ImageObject(img, true);
+                        break;
+                    case ImageCacheAlphaOperation.REMOVE_TRANSPARENCY:
+                        imgObj = ImageFilters.removeAlpha()(new ImageObject(img, true));
+                }
+                const imgRes = new ImageResource(imgObj, this.multiImageSize);
                 imgRes.onPostDelete.subscribeOnce(() => this.onDelete());
                 resolve(imgRes);
             };
@@ -82,10 +100,10 @@ export class ImageCache {
         return el.get();
     }
 
-    static getByUrl(url: string, alpha?: boolean, multiImageSize?: number): Promise<ImageResource> {
+    static getByUrl(url: string, alpha?: ImageCacheAlphaOperation, multiImageSize?: number): Promise<ImageResource> {
         const el = this.imagesByUrl.get(url);
         if (el == undefined) {
-            const newEl = new ImageCacheElement(url, alpha, multiImageSize ?? 1, () => this.imagesByUrl.delete(url));
+            const newEl = new ImageCacheElement(url, alpha ?? ImageCacheAlphaOperation.AUTO_DETECT, multiImageSize ?? 1, () => this.imagesByUrl.delete(url));
             this.imagesByUrl.set(url, newEl);
             return newEl.get();
         } else {
@@ -102,10 +120,10 @@ export class ImageCache {
         });
     }
 
-    static register(id: string, url: string, alpha?: boolean, multiImageSize?: number) {
+    static register(id: string, url: string, alpha?: ImageCacheAlphaOperation, multiImageSize?: number) {
         if (this.imagesById.has(id)) {
             throw new RangeError(`Image resource with id ${id} already registered.`);
         }
-        this.imagesById.set(id, new ImageCacheElement(url, alpha, multiImageSize ?? 1));
+        this.imagesById.set(id, new ImageCacheElement(url, alpha ?? ImageCacheAlphaOperation.AUTO_DETECT, multiImageSize ?? 1));
     }
 }

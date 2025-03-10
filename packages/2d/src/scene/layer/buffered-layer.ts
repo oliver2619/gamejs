@@ -11,7 +11,7 @@ export interface BufferedLayerData extends LayerData {
     autoUpdate: boolean;
     alpha?: number;
     blendOperation?: Blend2dOperation;
-    filter?: Filter;
+    filter?: Partial<Filter>;
     postEffect?: PostEffect;
 }
 
@@ -71,8 +71,8 @@ export class BufferedLayer extends Layer {
         this.alpha = data.alpha ?? 1;
         this.autoUpdate = data.autoUpdate;
         this._blendOperation = data.blendOperation ?? Blend2dOperation.NORMAL;
-        this._postEffect = data.postEffect ?? EmptyPostEffect.INSTANCE;
-        this.filter = data.filter == undefined ? FilterStack.createDefaultFilter() : { ...data.filter };
+        this._postEffect = data.postEffect ?? new EmptyPostEffect();
+        this.filter = data.filter == undefined ? FilterStack.createDefaultFilter() : FilterStack.createPartialFilter(data.filter);
         this._layer.addReference(this);
         this._postEffect.addReference(this);
     }

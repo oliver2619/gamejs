@@ -1,11 +1,12 @@
 import { Box2d, CoordSystem2d, CoordSystem2dData, ReadonlyBox2d, ReadonlyCoordSystem2d, ReadonlyVector2d, Vector2d } from "@pluto/core";
 import { RenderingContext2d } from "../component/rendering-context-2d";
+import { Object2dBase } from "./object-2d-base";
 
 export interface Camera2dData extends CoordSystem2dData {
     zoom?: number;
 }
 
-export class Camera2d {
+export class Camera2d implements Object2dBase {
     private _coordSystem: CoordSystem2d;
     private _matrix: DOMMatrix;
     private _invertedMatrix: DOMMatrix;

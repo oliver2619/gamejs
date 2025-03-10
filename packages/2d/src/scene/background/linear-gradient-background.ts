@@ -3,7 +3,7 @@ import { GradientBackground, GradientBackgroundData } from "./gradient-backgroun
 import { RenderingContext2d } from "../../component/rendering-context-2d";
 
 export interface LinearGradientBackgroundData extends GradientBackgroundData {
-    readonly direction: ReadonlyVector2d;
+    direction: ReadonlyVector2d;
 }
 
 export class LinearGradientBackground extends GradientBackground {
@@ -21,7 +21,7 @@ export class LinearGradientBackground extends GradientBackground {
         }
     }
 
-    constructor(data: LinearGradientBackgroundData) {
+    constructor(data: Readonly<LinearGradientBackgroundData>) {
         super(data);
         this._direction = data.direction.clone();
     }

@@ -1,8 +1,9 @@
-import { Box3d, CoordSystem2d, EventObservable, ReadonlyBox2d, ReadonlyBox3d, ReadonlyVector2d, Vector2d, Vector3d } from "@pluto/core";
+import { Box3d, EventObservable, ReadonlyBox2d, ReadonlyBox3d, ReadonlyVector2d, Vector2d, Vector3d } from "@pluto/core";
 import { Body, BodyData } from "./body";
 import { CollisionMnemento } from "./collision-mnemento";
 import { ForceConstraints } from "./force-constraints";
 import { StaticBody } from "./static-body";
+import { Object2dBase } from "../scene";
 
 export interface DynamicBodyPreSimulateEvent {
     readonly body: DynamicBody;
@@ -12,7 +13,7 @@ export interface DynamicBodyPreSimulateEvent {
 export interface DynamicBodyData extends BodyData {
 
     readonly mass?: number;
-    readonly object: CoordSystem2d;
+    readonly object: Object2dBase;
     readonly speed?: ReadonlyVector2d;
     readonly rotationSpeed?: number;
     readonly globalAccelerationFactor?: number;
@@ -21,7 +22,7 @@ export interface DynamicBodyData extends BodyData {
 export abstract class DynamicBody extends Body {
 
     readonly onPreSimulate = new EventObservable<DynamicBodyPreSimulateEvent>();
-    readonly object: CoordSystem2d;
+    readonly object: Object2dBase;
     readonly speed: Vector2d;
     readonly acceleration = new Vector2d(0, 0);
 
@@ -41,12 +42,12 @@ export abstract class DynamicBody extends Body {
         return this._dynamicBoundingBox;
     }
 
-    get position(): Vector2d {
-        return this.object.position;
+    get position(): ReadonlyVector2d {
+        return this.object.coordSystem.position;
     }
 
-    set position(p: Vector2d) {
-        this.object.position = p;
+    set position(p: ReadonlyVector2d) {
+        this.object.updateCoordSystem(cs => cs.position.setVector(p));
     }
 
     constructor(data: DynamicBodyData) {
@@ -122,8 +123,10 @@ export abstract class DynamicBody extends Body {
     }
 
     simulatePosition(timeout: number) {
-        this.object.position.addScaled(this.speed, timeout);
-        this.object.rotate(this.rotationSpeed * timeout);
+        this.object.updateCoordSystem(cs => {
+            cs.position.addScaled(this.speed, timeout);
+            cs.rotate(this.rotationSpeed * timeout);
+        });
     }
 
     updateDynamicBoundingBox(timeout: number) {

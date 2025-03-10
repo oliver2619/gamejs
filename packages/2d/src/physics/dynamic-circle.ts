@@ -34,7 +34,7 @@ export class DynamicCircle extends DynamicBody {
         this.radius = data.radius;
         this.relativeMomentOfInertia = data.relativeMomentOfInertia;
         const box = Box2d.empty();
-        box.extendByPoint(data.object.position);
+        box.extendByPoint(data.object.coordSystem.position);
         box.extendEveryDirection(data.radius);
         this.postConstruct(box);
     }

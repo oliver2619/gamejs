@@ -20,7 +20,7 @@ export abstract class GradientStyle extends PaintStyle {
 
     constructor(data: GradientStyleData) {
         super();
-        this._colorStops = new ColorStops({ stops: data.colorStops });
+        this._colorStops = new ColorStops(data.colorStops);
     }
 
     getStyle(): string | CanvasGradient | CanvasPattern {

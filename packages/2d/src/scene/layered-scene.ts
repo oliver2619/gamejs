@@ -18,9 +18,9 @@ export class LayeredScene extends AbstractReferencedObject implements Scene2d {
     filter: Filter;
     debug: boolean;
 
-    private _background: Background = EmptyBackground.INSTANCE;
+    private _background: Background = new EmptyBackground();
     private layers: Layer[] = [];
-    private _postEffect: PostEffect = EmptyPostEffect.INSTANCE;
+    private _postEffect: PostEffect = new EmptyPostEffect();
 
     get background(): Background {
         return this._background;

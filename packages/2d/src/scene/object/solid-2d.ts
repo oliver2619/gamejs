@@ -11,7 +11,7 @@ export interface Solid2dData {
     alpha?: number | undefined;
     clipPath?: PathObject | undefined;
     blendOperation?: Blend2dOperation | undefined;
-    filter?: Filter | undefined;
+    filter?: Partial<Filter> | undefined;
     visible?: boolean | undefined;
     name?: string | undefined;
 }
@@ -94,7 +94,7 @@ export abstract class Solid2d extends AbstractReferencedObject implements Object
         this._clipPath = data.clipPath;
         this.blendOperation = data.blendOperation;
         this._visible = data.visible == undefined ? true : data.visible;
-        this._filter = data.filter == undefined ? FilterStack.createDefaultFilter() : { ...data.filter };
+        this._filter = data.filter == undefined ? FilterStack.createDefaultFilter() : FilterStack.createPartialFilter(data.filter);
     }
 
     abstract clone(): Solid2d;

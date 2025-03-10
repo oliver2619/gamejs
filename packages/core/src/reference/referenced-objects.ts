@@ -56,7 +56,7 @@ class DefaultReferencedObject implements ReferencedObject {
 
 export class ReferencedObjects {
 
-    get gcSize(): number {
+    static get gcSize(): number {
         return allUnreferencedObjects.size;
     }
 

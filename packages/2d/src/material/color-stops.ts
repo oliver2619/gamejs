@@ -2,10 +2,6 @@ import { Color, ReadonlyColor } from "@pluto/core";
 
 export type ColorStopsArray = Array<{ color: ReadonlyColor; offset: number; }>;
 
-export interface ColorStopsData {
-    stops: ColorStopsArray;
-}
-
 class ColorStop {
 
     get transparent(): boolean {
@@ -25,8 +21,8 @@ export class ColorStops {
         });
     }
 
-    constructor(data: ColorStopsData) {
-        this.colorStops = data.stops.map(it => new ColorStop(it.color.clone(), it.offset)).sort((s1, s2) => s1.offset - s2.offset);
+    constructor(data: Readonly<ColorStopsArray>) {
+        this.colorStops = data.map(it => new ColorStop(it.color.clone(), it.offset)).sort((s1, s2) => s1.offset - s2.offset);
     }
 
     isTransparent(): boolean {

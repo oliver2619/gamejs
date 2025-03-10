@@ -62,6 +62,7 @@ export class RenderingContext2d {
         currentCanvasRenderingContext2d = context.context;
         currentCanvasRenderingContext2d.save();
         try {
+            current.filterStack.use();
             currentCanvasRenderingContext2d.beginPath();
             currentCanvasRenderingContext2d.rect(viewport.x1, viewport.y1, viewport.width, viewport.height);
             currentCanvasRenderingContext2d.clip();
@@ -114,17 +115,33 @@ export class RenderingContext2d {
             case ImagePlacement.CENTER:
                 this.canvasRenderingContext.drawImage(image.canvasImageSource, (this.viewport.width - image.width) * .5, (this.viewport.height - image.height) * .5);
                 break;
-            case ImagePlacement.SCALED:
-            case ImagePlacement.SMOOTH_SCALED:
-                this.canvasRenderingContext.imageSmoothingEnabled = placement === ImagePlacement.SMOOTH_SCALED;
-                const vw = this.viewport.width;
-                const vh = this.viewport.height;
-                const iw = image.width;
-                const ih = image.height;
-                const fx = vw / iw;
-                const fy = vh / ih;
-                const f = Math.min(fx, fy);
-                this.canvasRenderingContext.drawImage(image.canvasImageSource, (vw - iw * f) * .5, (vh - ih * f) * .5, iw * f, ih * f);
+            case ImagePlacement.MIN_SCALED:
+            case ImagePlacement.SMOOTH_MIN_SCALED:
+                this.canvasRenderingContext.imageSmoothingEnabled = placement === ImagePlacement.SMOOTH_MIN_SCALED;
+                {
+                    const vw = this.viewport.width;
+                    const vh = this.viewport.height;
+                    const iw = image.width;
+                    const ih = image.height;
+                    const fx = vw / iw;
+                    const fy = vh / ih;
+                    const f = Math.min(fx, fy);
+                    this.canvasRenderingContext.drawImage(image.canvasImageSource, (vw - iw * f) * .5, (vh - ih * f) * .5, iw * f, ih * f);
+                }
+                break;
+            case ImagePlacement.MAX_SCALED:
+            case ImagePlacement.SMOOTH_MAX_SCALED:
+                this.canvasRenderingContext.imageSmoothingEnabled = placement === ImagePlacement.SMOOTH_MAX_SCALED;
+                {
+                    const vw = this.viewport.width;
+                    const vh = this.viewport.height;
+                    const iw = image.width;
+                    const ih = image.height;
+                    const fx = vw / iw;
+                    const fy = vh / ih;
+                    const f = Math.max(fx, fy);
+                    this.canvasRenderingContext.drawImage(image.canvasImageSource, (vw - iw * f) * .5, (vh - ih * f) * .5, iw * f, ih * f);
+                }
                 break;
             case ImagePlacement.STRETCHED:
             case ImagePlacement.SMOOTH_STRETCHED:

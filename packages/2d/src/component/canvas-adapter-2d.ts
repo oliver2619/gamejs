@@ -42,7 +42,6 @@ export class CanvasAdapter2d extends CanvasAdapter {
 
     protected override onDestroy(): void {
         this.clearViewports();
-        ReferencedObjects.deleteAllUnreferenced();
     }
 
     protected override onRender(): void {
