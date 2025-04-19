@@ -1,0 +1,10 @@
+@mixin default {
+    border: 1px dotted #8af;
+    flex-grow: 1;
+    flex-shrink: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 1em;
+}

@@ -1,0 +1,22 @@
+:host {
+    position: relative;
+    overflow: auto;
+}
+
+.menu {
+    position: relative;
+    margin: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: 1ex;
+}
+
+a {
+    align-self: stretch;
+    transition: transform 50ms ease-out;
+
+    &.active {
+        transform: translateX(4%) scaleX(1.08);
+    }
+}

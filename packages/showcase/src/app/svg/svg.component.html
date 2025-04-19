@@ -1,0 +1,10 @@
+<form>
+    <div class="button-list">
+        <button type="button" (click)="onUpload()">Import SVG</button>
+        @if(hasDownload()) {
+            <a href="{{downloadUrl()}}" download="download.json" type="application/json" >Download JSON</a>
+        }
+    </div>
+    <input #input type="file" (change)="onInputChange()" accept="image/svg+xml" style="display: none">
+</form>
+<canvas width="800" height="450"></canvas>
