@@ -1,6 +1,6 @@
 import { ImageObject, ReadonlyRectangle, ReadonlyVector2d, Rectangle, Vector2d } from "@pluto/core";
 import { Context2d } from "./context-2d";
-import { Camera2d } from "../scene/camera-2d";
+import { ReadonlyCamera2d } from "../scene/camera-2d";
 import { Filter, FilterStack } from "../render/filter";
 import { ImagePlacement, TextHAlign, TextVAlign } from "../render";
 
@@ -28,10 +28,10 @@ export class RenderingContext2d {
         return this.context.context;
     }
 
-    private constructor(readonly context: Context2d, readonly viewport: ReadonlyRectangle, readonly camera: Camera2d, private readonly filterStack: FilterStack) {
+    private constructor(readonly context: Context2d, readonly viewport: ReadonlyRectangle, readonly camera: ReadonlyCamera2d, private readonly filterStack: FilterStack) {
     }
 
-    static renderFull(context: Context2d, camera: Camera2d, filterStack: FilterStack, callback: (context: RenderingContext2d) => void) {
+    static renderFull(context: Context2d, camera: ReadonlyCamera2d, filterStack: FilterStack, callback: (context: RenderingContext2d) => void) {
         const previous = current;
         const canvas = context.context.canvas;
         current = new RenderingContext2d(context, new Rectangle(0, 0, canvas.width, canvas.height), camera, filterStack);
@@ -56,7 +56,7 @@ export class RenderingContext2d {
         }
     }
 
-    static renderViewport(context: Context2d, viewport: ReadonlyRectangle, camera: Camera2d, filterStack: FilterStack, callback: (context: RenderingContext2d) => void) {
+    static renderViewport(context: Context2d, viewport: ReadonlyRectangle, camera: ReadonlyCamera2d, filterStack: FilterStack, callback: (context: RenderingContext2d) => void) {
         const previous = current;
         current = new RenderingContext2d(context, viewport, camera, filterStack);
         currentCanvasRenderingContext2d = context.context;

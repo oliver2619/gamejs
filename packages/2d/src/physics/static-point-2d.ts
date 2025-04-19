@@ -1,24 +1,24 @@
 import { CollisionMnemento } from "./collision-mnemento";
 import { DynamicCircle } from "./dynamic-circle";
-import { StaticBody, StaticBodyData } from "./static-body";
+import { StaticBody2dData } from "./static-body-2d";
 import { ForceConstraints } from "./force-constraints";
-import { ReadonlyVector2d, ReadonlyVector3d, Vector3d } from "core";
+import { Box2d, ReadonlyVector2d } from "@pluto/core";
+import { StaticBoxedBody2d } from "./static-boxed-body-2d";
 
-export interface StaticPointData extends StaticBodyData {
+export interface StaticPoint2dData extends StaticBody2dData {
     position: ReadonlyVector2d;
 }
 
-export class StaticPoint extends StaticBody {
+export class StaticPoint2d extends StaticBoxedBody2d {
 
     readonly position: ReadonlyVector2d;
 
-    get pointIn3d(): ReadonlyVector3d {
-        return new Vector3d(this.position.x, this.position.y, this.z);
-    }
-
-    constructor(data: Readonly<StaticPointData>) {
+    constructor(data: Readonly<StaticPoint2dData>) {
         super(data);
         this.position = data.position.clone();
+        const bb = Box2d.empty();
+        bb.extend(this.position.x, this.position.y);
+        this.postConstruct(bb);
     }
 
     getCollisionWithCircle(circle: DynamicCircle, mnemento: CollisionMnemento) {

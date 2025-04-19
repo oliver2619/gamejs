@@ -5,7 +5,6 @@ interface ForceConstraint {
     getForce(v: ReadonlyVector2d): Vector2d;
 }
 
-// TODO real physical spring model
 class ForceConstraintPlane implements ForceConstraint {
 
     constructor(readonly normal: ReadonlyVector2d, readonly intrusion: number) {

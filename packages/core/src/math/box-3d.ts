@@ -257,8 +257,8 @@ export class Box3d implements ReadonlyBox3d {
 	}
 
 	setCenter(center: ReadonlyVector3d, size: ReadonlyVector3d) {
-		this.min = new Vector3d(center.x - size.x, center.y - size.y, center.z - size.z);
-		this.max = new Vector3d(center.x + size.x, center.y + size.y, center.z - size.z);
+		this.min = new Vector3d(center.x - size.x * .5, center.y - size.y * .5, center.z - size.z * .5);
+		this.max = new Vector3d(center.x + size.x * .5, center.y + size.y * .5, center.z - size.z * .5);
 	}
 
 	private validate(): void {

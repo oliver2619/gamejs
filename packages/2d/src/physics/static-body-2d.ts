@@ -1,15 +1,15 @@
 import { RenderingContext2d } from "../component/rendering-context-2d";
-import { Body, BodyData } from "./body";
+import { Body2d, Body2dData } from "./body-2d";
 import { CollisionMnemento } from "./collision-mnemento";
 import { DynamicCircle } from "./dynamic-circle";
 import { ForceConstraints } from "./force-constraints";
 
-export interface StaticBodyData extends BodyData {
+export interface StaticBody2dData extends Body2dData {
 }
 
-export abstract class StaticBody extends Body {
+export abstract class StaticBody2d extends Body2d {
 
-    protected constructor(data: StaticBodyData) {
+    protected constructor(data: StaticBody2dData) {
         super(data);
     }
 

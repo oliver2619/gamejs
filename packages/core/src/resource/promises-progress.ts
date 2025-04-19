@@ -6,33 +6,52 @@ export interface PromisesProgressEvent {
     readonly total: number;
 }
 
+export interface PromiseWithProgress<T> {
+    readonly result: Promise<T>;
+    setProgress(loaded: number, total: number): void;
+}
+
+interface Item {
+    loaded: number;
+    total: number;
+}
 export class PromisesProgress {
 
     private static readonly _onProgress = new EventObservable<PromisesProgressEvent>();
-    private static total = 0;
-    private static loaded = 0;
     private static result: Promise<void> = this.createResultPromise();
     private static resolveCallback: (() => void) = () => { };
+    private static inProgress = new Map<Promise<any>, Item>();
+    private static totalLoaded = 0;
 
     static get onProgress(): Observable<PromisesProgressEvent> {
         return this._onProgress;
     }
 
-    static add<T>(promise: Promise<T>): Promise<T> {
-        if(this.total === this.loaded && this.total > 0) {
+    static add<T>(promise: Promise<T>): PromiseWithProgress<T> {
+        if (this.inProgress.size === 0) {
             this.reset();
         }
-        ++this.total;
+        const progress: Item = { loaded: 0, total: 1 };
+        this.inProgress.set(promise, progress);
         this.onProgressChange();
-        return promise.then(it => {
-            ++this.loaded;
+        const returnedPromise = promise.then(it => {
+            this.totalLoaded += progress.total;
+            this.inProgress.delete(promise);
             this.onProgressChange();
             return it;
         }).catch(reason => {
-            --this.total;
+            this.inProgress.delete(promise);
             this.onProgressChange();
             throw reason;
         });
+        const ret: PromiseWithProgress<T> = {
+            result: returnedPromise,
+            setProgress: (loaded: number, total: number) => {
+                progress.loaded = loaded;
+                progress.total = total;
+            }
+        };
+        return ret;
     }
 
     static wait(): Promise<void> {
@@ -46,15 +65,20 @@ export class PromisesProgress {
     }
 
     private static onProgressChange() {
-        this._onProgress.next({ loaded: this.loaded, total: this.total });
-        if (this.loaded === this.total) {
+        let loaded = this.totalLoaded;
+        let total = this.totalLoaded;
+        this.inProgress.forEach(it => {
+            loaded += it.loaded;
+            total += it.total;
+        });
+        this._onProgress.next({ loaded, total });
+        if (this.inProgress.size === 0) {
             this.resolveCallback();
         }
     }
 
     private static reset() {
-        this.total -= this.loaded;
-        this.loaded = 0;
+        this.totalLoaded = 0;
         this.result = this.createResultPromise();
     }
 }

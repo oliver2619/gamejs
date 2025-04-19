@@ -246,8 +246,8 @@ export class Box2d implements ReadonlyBox2d {
 	}
 
 	setCenter(center: ReadonlyVector2d, size: ReadonlyVector2d) {
-		this.min = new Vector2d(center.x - size.x, center.y - size.y);
-		this.max = new Vector2d(center.x + size.x, center.y + size.y);
+		this.min = new Vector2d(center.x - size.x * .5, center.y - size.y * .5);
+		this.max = new Vector2d(center.x + size.x * .5, center.y + size.y * .5);
 	}
 
 	private validate() {

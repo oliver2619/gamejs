@@ -20,7 +20,7 @@ export class PatternStyle extends PaintStyle {
     private _imageResource: ImageResource;
     private modified = true;
     private fillStyle: CanvasPattern | undefined;
-    private matrix = new DOMMatrix([1, 0, 0, 1, 0, 0]);
+    private readonly matrix = new DOMMatrix([1, 0, 0, 1, 0, 0]);
 
     get isTransparent(): boolean {
         return this._imageResource.isTransparent;
@@ -86,7 +86,7 @@ export class PatternStyle extends PaintStyle {
             this.updateMatrix();
             const pattern = RenderingContext2d.currentCanvasRenderingContext2d.createPattern(this._imageResource.image.canvasImageSource, this._repetition);
             if (pattern == null) {
-                throw new Error('Failed to create pattern');
+                throw new Error('Failed to create pattern.');
             }
             this.fillStyle = pattern;
             this.fillStyle.setTransform(this.matrix);
@@ -109,8 +109,8 @@ export class PatternStyle extends PaintStyle {
 
     private updateMatrix() {
         this.matrix.a = this._transform.xAxis.x;
-        this.matrix.b = this._transform.yAxis.x;
-        this.matrix.c = this._transform.xAxis.y;
+        this.matrix.b = -this._transform.xAxis.y;
+        this.matrix.c = -this._transform.yAxis.x;
         this.matrix.d = this._transform.yAxis.y;
         this.matrix.e = this._transform.position.x;
         this.matrix.f = -this._transform.position.y;

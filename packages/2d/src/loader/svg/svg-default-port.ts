@@ -1,7 +1,7 @@
 import { CoordSystem2dData, ImageFactory, ImageResource, ReadonlyVector2d, Vector2d } from "@pluto/core";
 import { PathBuilder } from "../../render/path-builder";
 import { PathObject } from "../../render/path-object";
-import { SvgElementData, SvgElementPort, SvgImagePort, SvgMaterializedElementData, SvgPathPort, SvgPort } from "./svg-port";
+import { SvgElementData, ElementPortBak, SvgImagePortBak, SvgMaterializedElementData, SvgPathPort, SvgPortBak } from "./svg-port-bak";
 import { ImageSolid2d, Object2d, PathSolid2d, Solid2d } from "../../scene";
 import { Object2dLoaderImageMapper, Object2dLoaderPatternMapper } from "../object-2d-loader";
 
@@ -36,7 +36,7 @@ class SvgPathDefaultPort implements SvgPathPort {
     }
 }
 
-class SvgImageDefaultPort implements SvgImagePort {
+class SvgImageDefaultPort implements SvgImagePortBak {
 
     constructor(readonly imageSolid: ImageSolid2d) { }
 
@@ -45,7 +45,7 @@ class SvgImageDefaultPort implements SvgImagePort {
     }
 }
 
-class SvgElementDefaultPort implements SvgElementPort {
+class SvgElementDefaultPort implements ElementPortBak {
 
     readonly object: Object2d;
 
@@ -67,24 +67,24 @@ class SvgElementDefaultPort implements SvgElementPort {
         this.addPathObject(path, meta);
     }
 
-    addGroup(data: { coordSystem: CoordSystem2dData }, meta: SvgMaterializedElementData): SvgElementPort {
+    addGroup(data: { coordSystem: CoordSystem2dData }, meta: SvgMaterializedElementData): ElementPortBak {
         const ret = new SvgElementDefaultPort(this.objectsByName, this.solidsByName, data.coordSystem);
         ret.object.visible = meta.visible;
-        this.object.add(ret.object);
+        this.object.addPart(ret.object);
         if (meta.id != undefined) {
             this.objectsByName[meta.id] = ret.object;
         }
         return ret;
     }
 
-    addImage(data: { x: number, y: number, width: number, height: number }, meta: SvgElementData): SvgImagePort {
+    addImage(data: { x: number, y: number, width: number, height: number }, meta: SvgElementData): SvgImagePortBak {
         const solid = new ImageSolid2d({
             image: new ImageResource(ImageFactory.emptyImage(8), 1),
             position: new Vector2d(data.x, data.y),
             alpha: meta.opacity,
             visible: meta.visible
         });
-        this.object.add(solid);
+        this.object.addPart(solid);
         if (meta.id != undefined) {
             this.solidsByName[meta.id] = solid;
         }
@@ -125,14 +125,14 @@ class SvgElementDefaultPort implements SvgElementPort {
             alpha: meta.opacity,
             visible: meta.visible
         });
-        this.object.add(s);
+        this.object.addPart(s);
         if (meta.id != undefined) {
             this.solidsByName[meta.id] = s;
         }
     }
 }
 
-export class SvgDefaultPort implements SvgPort {
+export class SvgDefaultPort implements SvgPortBak {
 
     private readonly objectsByName: { [key: string]: Object2d } = {};
     private readonly solidsByName: { [key: string]: Solid2d } = {};

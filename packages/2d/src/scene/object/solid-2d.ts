@@ -112,7 +112,7 @@ export abstract class Solid2d extends AbstractReferencedObject implements Object
                     this._clipPath.clip('nonzero');
                 }
                 if (this.blendOperation != undefined) {
-                    ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation.value;
+                    ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation;
                 }
                 if (this.occlusionTest != undefined) {
                     ctx.canvasRenderingContext.globalAlpha *= this.occlusionTest.alpha * this.alpha;

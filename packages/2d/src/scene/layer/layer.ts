@@ -1,7 +1,7 @@
 import { AbstractReferencedObject } from "@pluto/core";
 
 export interface LayerData {
-    visible?: boolean;
+    visible?: boolean | undefined;
 }
 
 export abstract class Layer extends AbstractReferencedObject {

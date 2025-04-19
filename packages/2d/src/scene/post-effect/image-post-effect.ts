@@ -33,13 +33,13 @@ export class ImagePostEffect extends PostEffect {
         super();
         this._image = data.image;
         this.placement = data.placement == undefined ? ImagePlacement.CENTER : data.placement;
-        this.blendOperation = data.blendOperation ?? Blend2dOperation.NORMAL;
+        this.blendOperation = data.blendOperation ?? 'source-over';
         this._image.addReference(this);
     }
 
     render() {
         RenderingContext2d.renderSafely(ctx => {
-            ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation.value;
+            ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation;
             ctx.drawFullscreenImage(this._image.image, this.placement);
         });
     }

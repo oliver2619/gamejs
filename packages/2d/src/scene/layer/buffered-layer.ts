@@ -70,7 +70,7 @@ export class BufferedLayer extends Layer {
         this._layer = data.layer;
         this.alpha = data.alpha ?? 1;
         this.autoUpdate = data.autoUpdate;
-        this._blendOperation = data.blendOperation ?? Blend2dOperation.NORMAL;
+        this._blendOperation = data.blendOperation ?? 'source-over';
         this._postEffect = data.postEffect ?? new EmptyPostEffect();
         this.filter = data.filter == undefined ? FilterStack.createDefaultFilter() : FilterStack.createPartialFilter(data.filter);
         this._layer.addReference(this);
@@ -96,7 +96,7 @@ export class BufferedLayer extends Layer {
         if (this.visible && this.ownContext != undefined) {
             RenderingContext2d.withFilter(this.filter, ctx => {
                 ctx.canvasRenderingContext.globalAlpha *= this.alpha;
-                ctx.canvasRenderingContext.globalCompositeOperation = this._blendOperation.value;
+                ctx.canvasRenderingContext.globalCompositeOperation = this._blendOperation;
                 ctx.canvasRenderingContext.drawImage(this.ownContext!.canvas, 0, 0);
             });
         }

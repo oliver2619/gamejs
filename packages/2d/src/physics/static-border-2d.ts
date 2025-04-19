@@ -1,20 +1,20 @@
 import { CollisionMnemento } from "./collision-mnemento";
 import { DynamicCircle } from "./dynamic-circle";
-import { StaticBody, StaticBodyData } from "./static-body";
+import { StaticBody2d, StaticBody2dData } from "./static-body-2d";
 import { ForceConstraints } from "./force-constraints";
 import { ReadonlyVector2d } from "@pluto/core";
 
-export interface StaticLineData extends StaticBodyData {
+export interface StaticBorder2dData extends StaticBody2dData {
     point: ReadonlyVector2d;
     normal: ReadonlyVector2d;
 }
 
-export class StaticLine extends StaticBody {
+export class StaticBorder2d extends StaticBody2d {
 
     readonly offset: number;
     readonly normal: ReadonlyVector2d;
 
-    constructor(data: Readonly<StaticLineData>) {
+    constructor(data: Readonly<StaticBorder2dData>) {
         super(data);
         this.normal = data.normal.getNormalized();
         this.offset = data.point.getDotProduct(this.normal);

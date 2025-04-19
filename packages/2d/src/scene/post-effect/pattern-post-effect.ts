@@ -35,7 +35,7 @@ export class PatternPostEffect extends PostEffect {
 
     render() {
         RenderingContext2d.renderSafely(ctx => {
-            ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation.value;
+            ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation;
             ctx.canvasRenderingContext.fillStyle = this._pattern.getStyle();
             ctx.fill();
         });

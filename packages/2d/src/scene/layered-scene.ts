@@ -95,6 +95,18 @@ export class LayeredScene extends AbstractReferencedObject implements Scene2d {
         this.layers.forEach(it => it.addReference(this));
     }
 
+    setLayerZPosition(layer: Layer, zPosition: number) {
+        const i = this.layers.indexOf(layer);
+        if (i < 0) {
+            throw new RangeError('Layer not found.');
+        }
+        zPosition = Math.max(0, Math.min(zPosition | 0, this.layers.length - 1));
+        if (zPosition !== i) {
+            this.layers.splice(i, 1);
+            this.layers.splice(zPosition, 0, layer);
+        }
+    }
+
     protected onDelete() {
         this._background.releaseReference(this);
         this.layers.forEach(it => it.releaseReference(this));

@@ -1,6 +1,6 @@
 import { CollisionMnemento } from "./collision-mnemento";
 import { DynamicBody, DynamicBodyData } from "./dynamic-body";
-import { StaticBody } from "./static-body";
+import { StaticBody2d } from "./static-body-2d";
 
 export interface DynamicBoxData extends DynamicBodyData {
     width: number;
@@ -30,9 +30,9 @@ export class DynamicBox extends DynamicBody {
     getDynamicCollision(_body: DynamicBody, _mnemento: CollisionMnemento): void {
     }
 
-    getStaticCollision(_body: StaticBody, _mnemento: CollisionMnemento): void {
+    getStaticCollision(_body: StaticBody2d, _mnemento: CollisionMnemento): void {
     }
 
-    getStaticForceConstraints(_body: StaticBody): void {
+    getStaticForceConstraints(_body: StaticBody2d): void {
     }
 }

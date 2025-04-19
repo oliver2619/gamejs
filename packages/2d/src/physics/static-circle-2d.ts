@@ -1,21 +1,21 @@
 import { CollisionMnemento } from "./collision-mnemento";
 import { DynamicCircle } from "./dynamic-circle";
-import { StaticBodyData } from "./static-body";
-import { StaticBoxedBody } from "./static-boxed-body";
+import { StaticBody2dData } from "./static-body-2d";
+import { StaticBoxedBody2d } from "./static-boxed-body-2d";
 import { ForceConstraints } from "./force-constraints";
 import { Box2d, ReadonlyVector2d } from "@pluto/core";
 
-export interface StaticCircleData extends StaticBodyData {
+export interface StaticCircle2dData extends StaticBody2dData {
     center: ReadonlyVector2d;
     radius: number;
 }
 
-export class StaticCircle extends StaticBoxedBody {
+export class StaticCircle2d extends StaticBoxedBody2d {
 
     readonly center: ReadonlyVector2d;
     readonly radius: number;
 
-    constructor(data: Readonly<StaticCircleData>) {
+    constructor(data: Readonly<StaticCircle2dData>) {
         super(data);
         this.center = data.center.clone();
         this.radius = data.radius;

@@ -1,4 +1,4 @@
 export * from './svg-default-port';
 export * from './svg-loader';
-export * from './svg-parser';
-export * from './svg-port';
+export * from './svg-parser_bak';
+export * from './svg-port-bak';

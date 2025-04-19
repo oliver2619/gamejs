@@ -1,101 +1,83 @@
 import { OctTree, ReadonlyVector2d, Vector2d } from "@pluto/core";
 import { CollisionMnemento } from "./collision-mnemento";
 import { DynamicBody } from "./dynamic-body";
-import { StaticBody } from "./static-body";
-import { StaticBoxedBody } from "./static-boxed-body";
-import { StaticLine } from "./static-line";
-import { StaticPoint } from "./static-point";
+import { StaticBody2d } from "./static-body-2d";
+import { StaticBoxedBody2d } from "./static-boxed-body-2d";
+import { StaticBorder2d } from "./static-border-2d";
 
-export interface PhysicsSystemData {
-
-    readonly globalAcceleration: ReadonlyVector2d;
-    readonly simulationSteps?: number;
+export interface PhysicsSystem2dData {
+    globalAcceleration?: ReadonlyVector2d | undefined;
+    simulationSteps?: number | undefined;
 }
 
-export class PhysicsSystem {
+export class PhysicsSystem2d {
 
     globalAcceleration: Vector2d;
+    simulationSteps: number;
 
-    private readonly staticBodies = OctTree.withMinimumNumberOfElements<StaticBody>(1000);
-    private readonly staticLines: StaticLine[] = [];
-    private readonly simulatedBodies = OctTree.withMinimumNumberOfElements<DynamicBody>(1000);
-    private readonly simulationSteps: number;
+    private readonly staticBodies = OctTree.withMinimumNumberOfElements<StaticBody2d>(1000);
+    private readonly borders: StaticBorder2d[] = [];
+    private readonly dynamicBodies = OctTree.withMinimumNumberOfElements<DynamicBody>(1000);
 
-    constructor(data: PhysicsSystemData) {
-        this.simulationSteps = data.simulationSteps == undefined ? 1 : data.simulationSteps;
-        this.globalAcceleration = data.globalAcceleration == undefined ? new Vector2d(0, 0) : data.globalAcceleration.clone();
+    constructor(data?: Readonly<PhysicsSystem2dData>) {
+        this.simulationSteps = data?.simulationSteps ?? 1;
+        this.globalAcceleration = data?.globalAcceleration?.clone() ?? new Vector2d(0, 0);
+    }
+
+    addBorder(line: StaticBorder2d): StaticBorder2d {
+        this.borders.push(line);
+        return line;
     }
 
     addDynamicBody<T extends DynamicBody>(body: T): T {
-        this.simulatedBodies.addSolid(body, body.boundingBox);
+        this.dynamicBodies.addSolid(body, body.boundingBox);
         return body;
     }
 
-    addStaticBody<T extends StaticBoxedBody>(body: T): T {
+    addStaticBody<T extends StaticBoxedBody2d>(body: T): T {
         this.staticBodies.addSolid(body, body.boundingBox);
         return body;
     }
 
-    addStaticLine(line: StaticLine): StaticLine {
-        this.staticLines.push(line);
-        return line;
-    }
-
-    addStaticPoint(point: StaticPoint): StaticPoint {
-        this.staticBodies.addPoint(point, point.pointIn3d);
-        return point;
-    }
-
     render() {
-        this.staticLines.forEach(it => it.render());
+        this.borders.forEach(it => it.render());
         this.staticBodies.forEach(it => it.render());
     }
 
     rebuild(minNumberOfElements?: number) {
         this.staticBodies.rebuild({ minNumberOfElements });
-        this.simulatedBodies.rebuild({ minBox: this.staticBodies.boundingBox, minNumberOfElements });
+        this.dynamicBodies.rebuild({ minBox: this.staticBodies.boundingBox, minNumberOfElements });
     }
 
-    removeDynamicBody(body: DynamicBody) {
-        this.simulatedBodies.removeSolid(body, body.boundingBox);
-    }
-
-    removeStaticBody(body: StaticBoxedBody) {
-        this.staticBodies.removeSolid(body, body.boundingBox);
-    }
-
-    removeStaticLines(line: StaticLine) {
-        const i = this.staticLines.indexOf(line);
+    removeBorder(line: StaticBorder2d) {
+        const i = this.borders.indexOf(line);
         if (i >= 0) {
-            this.staticLines.splice(i, 1);
+            this.borders.splice(i, 1);
         }
     }
 
-    removeStaticPoint(point: StaticPoint) {
-        this.staticBodies.removePoint(point, point.pointIn3d);
+    removeDynamicBody(body: DynamicBody) {
+        this.dynamicBodies.removeSolid(body, body.boundingBox);
+    }
+
+    removeStaticBody(body: StaticBoxedBody2d) {
+        this.staticBodies.removeSolid(body, body.boundingBox);
     }
 
     simulate(timeout: number) {
         const dt = timeout / this.simulationSteps;
         for (let i = 0; i < this.simulationSteps; ++i) {
-            this._simulate(dt);
+            this.simulateStep(dt);
         }
     }
 
     private _presimulate(timeout: number) {
-        this.simulatedBodies.forEach(body => {
-            if (body.enabled) {
-                body.resetForcesAndConstraints(this.globalAcceleration);
-            }
-        });
-        this.simulatedBodies.forEach(body => {
-            if (body.enabled) {
-                body.onPreSimulate.next({ body, timeout });
-            }
+        this.dynamicBodies.forEach(body => {
+            body.presimulate(this.globalAcceleration, timeout);
         });
     }
 
-    private _simulate(timeout: number) {
+    private simulateStep(timeout: number) {
         this._presimulate(timeout);
         this._simulateSpeed(timeout);
         this._simulateCollisions(timeout);
@@ -103,9 +85,9 @@ export class PhysicsSystem {
 
     private _simulateSpeed(timeout: number) {
         this._updateSimulatedBodiesBoundingBox(timeout);
-        this.simulatedBodies.forEach(body => {
+        this.dynamicBodies.forEach(body => {
             if (body.enabled) {
-                this.staticLines.forEach(line => {
+                this.borders.forEach(line => {
                     if (line.enabled && body.overlapsZRange(line)) {
                         body.getStaticForceConstraints(line);
                     }
@@ -117,7 +99,7 @@ export class PhysicsSystem {
                 });
             }
         });
-        this.simulatedBodies.forEach(body => {
+        this.dynamicBodies.forEach(body => {
             if (body.enabled) {
                 body.applyStaticForceConstraints();
                 body.simulateSpeed(timeout);
@@ -130,9 +112,9 @@ export class PhysicsSystem {
         while (timeout > 0) {
             this._updateSimulatedBodiesBoundingBox(timeout);
             const mnemento = new CollisionMnemento(timeout);
-            this.simulatedBodies.forEach(body => {
+            this.dynamicBodies.forEach(body => {
                 if (body.enabled) {
-                    this.staticLines.forEach(line => {
+                    this.borders.forEach(line => {
                         if (line.enabled && body.overlapsZRange(line)) {
                             body.getStaticCollision(line, mnemento);
                         }
@@ -142,7 +124,7 @@ export class PhysicsSystem {
                             body.getStaticCollision(statBody, mnemento);
                         }
                     });
-                    this.simulatedBodies.forEachInBox(body.boundingBox, other => {
+                    this.dynamicBodies.forEachInBox(body.boundingBox, other => {
                         if (other.enabled && other !== body) {
                             body.getDynamicCollision(other, mnemento);
                         }
@@ -150,18 +132,18 @@ export class PhysicsSystem {
                 }
             });
             if (mnemento.hasCollisions) {
-                this._simulateStep(mnemento.timeout);
+                this.simulatePositions(mnemento.timeout);
                 timeout -= mnemento.timeout;
                 mnemento.processCollisions();
             } else {
-                this._simulateStep(timeout);
+                this.simulatePositions(timeout);
                 break;
             }
         }
     }
 
-    private _simulateStep(timeout: number) {
-        this.simulatedBodies.forEach(body => {
+    private simulatePositions(timeout: number) {
+        this.dynamicBodies.forEach(body => {
             if (body.enabled) {
                 body.simulatePosition(timeout);
             }
@@ -169,7 +151,7 @@ export class PhysicsSystem {
     }
 
     private _updateSimulatedBodiesBoundingBox(timeout: number) {
-        this.simulatedBodies.moveAllSolidsIf(it => it.enabled, it => {
+        this.dynamicBodies.moveAllSolidsIf(it => it.enabled, it => {
             it.updateDynamicBoundingBox(timeout);
             return it.boundingBox;
         });

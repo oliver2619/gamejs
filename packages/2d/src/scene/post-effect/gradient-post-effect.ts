@@ -25,7 +25,7 @@ export abstract class GradientPostEffect extends PostEffect {
     constructor(data: Readonly<GradientPostEffectData>) {
         super();
         this.alpha = data.alpha ?? 1;
-        this.blendOperation = data.blendOperation ?? Blend2dOperation.NORMAL;
+        this.blendOperation = data.blendOperation ?? 'source-over';
         this.colorStops = new ColorStops(data.colorStops);
     }
 
@@ -37,7 +37,7 @@ export abstract class GradientPostEffect extends PostEffect {
     render(): void {
         RenderingContext2d.renderSafely(ctx => {
             ctx.canvasRenderingContext.globalAlpha *= this.alpha;
-            ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation.value;
+            ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation;
             this.updateAndUseGradient(ctx);
             ctx.fill();
         });

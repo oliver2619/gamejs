@@ -1,8 +1,8 @@
-import { Box3d, EventObservable, ReadonlyBox2d, ReadonlyBox3d, ReadonlyVector2d, Vector2d, Vector3d } from "@pluto/core";
-import { Body, BodyData } from "./body";
+import { Box3d, EventObservable, Observable, ReadonlyBox2d, ReadonlyBox3d, ReadonlyVector2d, Vector2d, Vector3d } from "@pluto/core";
+import { Body2d, Body2dData } from "./body-2d";
 import { CollisionMnemento } from "./collision-mnemento";
 import { ForceConstraints } from "./force-constraints";
-import { StaticBody } from "./static-body";
+import { StaticBody2d } from "./static-body-2d";
 import { Object2dBase } from "../scene";
 
 export interface DynamicBodyPreSimulateEvent {
@@ -10,18 +10,16 @@ export interface DynamicBodyPreSimulateEvent {
     readonly timeout: number;
 }
 
-export interface DynamicBodyData extends BodyData {
-
-    readonly mass?: number;
+export interface DynamicBodyData extends Body2dData {
+    readonly mass?: number | undefined;
     readonly object: Object2dBase;
-    readonly speed?: ReadonlyVector2d;
-    readonly rotationSpeed?: number;
-    readonly globalAccelerationFactor?: number;
+    readonly speed?: ReadonlyVector2d | undefined;
+    readonly rotationSpeed?: number | undefined;
+    readonly gravity?: number | undefined;
 }
 
-export abstract class DynamicBody extends Body {
+export abstract class DynamicBody extends Body2d {
 
-    readonly onPreSimulate = new EventObservable<DynamicBodyPreSimulateEvent>();
     readonly object: Object2dBase;
     readonly speed: Vector2d;
     readonly acceleration = new Vector2d(0, 0);
@@ -31,8 +29,9 @@ export abstract class DynamicBody extends Body {
     mass: number;
     rotationSpeed: number;
     angularAcceleration = 0;
-    globalAccelerationFactor: number;
+    gravity: number;
 
+    private readonly _onPreSimulate = new EventObservable<DynamicBodyPreSimulateEvent>();
     private readonly _staticBoundingBox = Box3d.empty();
     private readonly _dynamicBoundingBox = Box3d.empty();
     protected readonly forceConstraints = new ForceConstraints();
@@ -42,6 +41,10 @@ export abstract class DynamicBody extends Body {
         return this._dynamicBoundingBox;
     }
 
+    get onPreSimulate(): Observable<DynamicBodyPreSimulateEvent> {
+        return this._onPreSimulate;
+    }
+    
     get position(): ReadonlyVector2d {
         return this.object.coordSystem.position;
     }
@@ -53,7 +56,7 @@ export abstract class DynamicBody extends Body {
     constructor(data: DynamicBodyData) {
         super(data);
         this.mass = data.mass == undefined ? 1 : data.mass;
-        this.globalAccelerationFactor = data.globalAccelerationFactor == undefined ? 1 : data.globalAccelerationFactor;
+        this.gravity = data.gravity == undefined ? 1 : data.gravity;
         this.object = data.object;
         this.speed = data.speed == undefined ? new Vector2d(0, 0) : data.speed.clone();
         this.rotationSpeed = data.rotationSpeed == undefined ? 0 : data.rotationSpeed;
@@ -66,7 +69,7 @@ export abstract class DynamicBody extends Body {
         this.forceConstraints.applySpeed(this.speed);
     }
 
-    collideAtSurface(normal: ReadonlyVector2d, collisionPoint: ReadonlyVector2d, other: Body) {
+    collideAtSurface(normal: ReadonlyVector2d, collisionPoint: ReadonlyVector2d, other: Body2d) {
         const tangent = normal.getCrossProductWithScalar(1);
         const bounciness = this.material.getResultingBounciness(other.material);
         const friction = this.material.getResultingFriction(other.material);
@@ -107,14 +110,17 @@ export abstract class DynamicBody extends Body {
 
     abstract getDynamicCollision(body: DynamicBody, mnemento: CollisionMnemento): void;
 
-    abstract getStaticCollision(body: StaticBody, mnemento: CollisionMnemento): void;
+    abstract getStaticCollision(body: StaticBody2d, mnemento: CollisionMnemento): void;
 
-    abstract getStaticForceConstraints(body: StaticBody): void;
+    abstract getStaticForceConstraints(body: StaticBody2d): void;
 
-    resetForcesAndConstraints(globalAcceleration: ReadonlyVector2d) {
-        this.forceConstraints.reset();
-        this.acceleration.setScaled(globalAcceleration, this.mass * this.globalAccelerationFactor);
-        this.angularAcceleration = 0;
+    presimulate(globalAcceleration: ReadonlyVector2d, timeout: number) {
+        if (this.enabled) {
+            this.forceConstraints.reset();
+            this.acceleration.setScaled(globalAcceleration, this.gravity);
+            this.angularAcceleration = 0;
+            this._onPreSimulate.next({ body: this, timeout });
+        }
     }
 
     simulateSpeed(timeout: number) {
@@ -130,7 +136,7 @@ export abstract class DynamicBody extends Body {
     }
 
     updateDynamicBoundingBox(timeout: number) {
-        this._staticBoundingBox.setCenter(new Vector3d(this.position.x, this.position.y, this.z + this.zDepth * .5), new Vector3d(this.boundingRadius, this.boundingRadius, this.zDepth * .5));
+        this._staticBoundingBox.setCenter(new Vector3d(this.position.x, this.position.y, this.z), new Vector3d(this.boundingRadius, this.boundingRadius, this.zDepth));
         const dir = this.speed.getScaled(timeout);
         this._dynamicBoundingBox.setBoundingBox(this._staticBoundingBox);
         this._dynamicBoundingBox.extendByDirection(new Vector3d(dir.x, dir.y, 0));

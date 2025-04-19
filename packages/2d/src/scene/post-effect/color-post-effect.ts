@@ -29,7 +29,7 @@ export class ColorPostEffect extends PostEffect {
     constructor(data: Readonly<ColorPostEffectData>) {
         super();
         this._color = data.color.clone();
-        this.blendOperation = data.blendOperation ?? Blend2dOperation.MULTIPLY;
+        this.blendOperation = data.blendOperation ?? 'multiply';
     }
 
     render(): void {
@@ -38,7 +38,7 @@ export class ColorPostEffect extends PostEffect {
             this.modified = false;
         }
         RenderingContext2d.renderSafely(ctx => {
-            ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation.value;
+            ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation;
             ctx.canvasRenderingContext.fillStyle = this.style;
             ctx.fill();
         });

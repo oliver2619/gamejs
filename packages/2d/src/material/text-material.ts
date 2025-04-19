@@ -3,9 +3,9 @@ import { RenderingContext2d } from "../component/rendering-context-2d";
 import { Material2d, Material2dData } from "./material-2d";
 
 export interface TextMaterialData extends Material2dData {
-    readonly fontSize?: number;
-    readonly fontFamily?: string;
-    readonly fontWeight?: string;
+    readonly fontSize?: number | undefined;
+    readonly fontFamily?: string | undefined;
+    readonly fontWeight?: string | undefined;
 }
 
 export class TextMaterial extends Material2d {

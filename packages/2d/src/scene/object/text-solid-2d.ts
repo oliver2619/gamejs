@@ -1,17 +1,17 @@
 import { Box2d, ReadonlyRectangle, Rectangle } from "@pluto/core";
 import { Solid2d, Solid2dData } from "./solid-2d";
-import { TextMaterial } from "../../material/text-material";
 import { TextHAlign, TextVAlign } from "../../render/text-align";
 import { RenderingContext2d } from "../../component/rendering-context-2d";
+import { Material2d } from "../../material";
 
 export interface TextSolid2dData extends Solid2dData {
     readonly text: string;
     readonly rectangle: ReadonlyRectangle;
-    readonly fill?: boolean;
-    readonly stroke?: boolean;
-    readonly material?: TextMaterial;
-    readonly hAlign?: TextHAlign;
-    readonly vAlign?: TextVAlign;
+    readonly fill?: boolean | undefined;
+    readonly stroke?: boolean | undefined;
+    readonly material?: Material2d | undefined;
+    readonly hAlign?: TextHAlign | undefined;
+    readonly vAlign?: TextVAlign | undefined;
 }
 
 export class TextSolid2d extends Solid2d {
@@ -22,20 +22,20 @@ export class TextSolid2d extends Solid2d {
     stroke: boolean;
 
     private _text: string;
-    private _textMaterial: TextMaterial;
+    private _material: Material2d;
     private _rectangle: Rectangle;
 
-    get material(): TextMaterial {
-        return this._textMaterial;
+    get material(): Material2d {
+        return this._material;
     }
 
-    set material(m: TextMaterial) {
-        if (this._textMaterial !== m) {
+    set material(m: Material2d) {
+        if (this._material !== m) {
             // this._textMaterial.onChange.unsubscribe(this);
-            this._textMaterial.releaseReference(this);
-            this._textMaterial = m;
+            this._material.releaseReference(this);
+            this._material = m;
             // this._textMaterial.onChange.subscribe(this, () => this.setBoundingBoxModified());
-            this._textMaterial.addReference(this);
+            this._material.addReference(this);
             // TODO do we really need to update, if the font changes? Bounding box depends only on the rectangle.
             // this.setBoundingBoxModified();
         }
@@ -71,10 +71,10 @@ export class TextSolid2d extends Solid2d {
         this.hAlign = data.hAlign ?? TextHAlign.CENTER;
         this.vAlign = data.vAlign ?? TextVAlign.CENTER;
         this._rectangle = data.rectangle.clone();
-        this._textMaterial = data.material ?? new TextMaterial();
+        this._material = data.material ?? new Material2d();
         // TODO do we really need to update, if the font changes? Bounding box depends only on the rectangle.
         // this._textMaterial.onChange.subscribe(this, () => this.setBoundingBoxModified());
-        this._textMaterial.addReference(this);
+        this._material.addReference(this);
     }
 
     clone(): TextSolid2d {
@@ -91,7 +91,7 @@ export class TextSolid2d extends Solid2d {
             hAlign: this.hAlign,
             vAlign: this.vAlign,
             rectangle: this._rectangle,
-            material: this._textMaterial,
+            material: this._material,
         });
     }
 
@@ -102,11 +102,11 @@ export class TextSolid2d extends Solid2d {
 
     protected onDelete() {
         // this._textMaterial.onChange.unsubscribe(this);
-        this._textMaterial.releaseReference(this);
+        this._material.releaseReference(this);
     }
 
     protected onRenderSafely() {
-        this._textMaterial.use();
+        this._material.use();
         const off = RenderingContext2d.current.getTextOffset(this._text, this._rectangle, this.hAlign, this.vAlign);
         if (this.fill) {
             RenderingContext2d.currentCanvasRenderingContext2d.fillText(this._text, off.x, off.y);

@@ -122,11 +122,22 @@ export class Vector3d implements ReadonlyVector3d {
     }
 
     getNormal(): Vector3d {
-        const v1 = new Vector3d(this.y - this.z, this.z - this.x, this.x - this.y);
-        const v2 = new Vector3d(this.y + this.z, -this.z - this.x, -this.x + this.y);
-        const l1 = v1.squareLength;
-        const l2 = v2.squareLength;
-        return l1 > l2 ? v1.getScaled(1 / Math.sqrt(l1)) : v2.getScaled(1 / Math.sqrt(l2));
+        const ax = Math.abs(this.x);
+        const ay = Math.abs(this.y);
+        const az = Math.abs(this.z);
+        if (ax < ay) {
+            if (ax < az) {
+                return new Vector3d(0, -this.z, this.y).getNormalized();
+            } else {
+                return new Vector3d(-this.y, this.x, 0).getNormalized();
+            }
+        } else {
+            if (ay < az) {
+                return new Vector3d(this.z, 0, -this.x).getNormalized();
+            } else {
+                return new Vector3d(-this.y, this.x, 0).getNormalized();
+            }
+        }
     }
 
     getNormalized(): Vector3d {

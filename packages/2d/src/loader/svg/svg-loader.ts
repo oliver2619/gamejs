@@ -1,7 +1,7 @@
 import { ResourceLoader } from "@pluto/core";
 import { Object2d } from "../../scene";
 import { Object2dLoader, Object2dLoaderData, Object2dLoaderImageMapper, Object2dLoaderPatternMapper } from "../object-2d-loader";
-import { SvgParser } from "./svg-parser";
+import { SvgParserOld } from "./svg-parser_bak";
 import { SvgDefaultPort } from "./svg-default-port";
 
 export class SvgLoader implements Object2dLoader {
@@ -25,7 +25,7 @@ export class SvgLoader implements Object2dLoader {
             patternMapper: this.patternMapper,
             imageMapper: this.imageMapper
         });
-        new SvgParser().parseString(input, port);
+        new SvgParserOld().parseString(input, port);
         return port.getResult();
     }
 }

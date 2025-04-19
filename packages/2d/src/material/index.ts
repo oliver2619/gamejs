@@ -4,6 +4,8 @@ export * from './gradient-style';
 export * from './line-style';
 export * from './linear-gradient-style';
 export * from './material-2d-cache';
+export * from './material-2d-json';
+export * from './material-2d-loader';
 export * from './material-2d';
 export * from './paint-style';
 export * from './pattern-style';

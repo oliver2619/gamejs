@@ -1,20 +1,9 @@
 import { Box2d } from "@pluto/core";
 import { CollisionMnemento } from "./collision-mnemento";
 import { DynamicBody, DynamicBodyData } from "./dynamic-body";
-import { StaticBody } from "./static-body";
-
-export class CircleRelativeMomentsOfInertia {
-
-    static readonly SOLID_SPHERE = 2 / 5;
-    static readonly HOLLOW_SPHERE = 2 / 3;
-    static readonly SOLID_CYLINDER = 1 / 2;
-    static readonly HOLLOW_CYLINDER = 1;
-    static readonly SOLID_CONE = 3 / 10;
-    static readonly HOLLOW_CONE = 1 / 2;
-}
+import { StaticBody2d } from "./static-body-2d";
 
 export interface DynamicCircleData extends DynamicBodyData {
-
     readonly radius: number;
     readonly relativeMomentOfInertia: number;
 }
@@ -65,11 +54,11 @@ export class DynamicCircle extends DynamicBody {
         body.getCollisionWithCircle(this, mnemento);
     }
 
-    getStaticCollision(body: StaticBody, mnemento: CollisionMnemento) {
+    getStaticCollision(body: StaticBody2d, mnemento: CollisionMnemento) {
         body.getCollisionWithCircle(this, mnemento);
     }
 
-    getStaticForceConstraints(body: StaticBody) {
+    getStaticForceConstraints(body: StaticBody2d) {
         body.getStaticForceConstraintForCircle(this, this.forceConstraints);
     }
 }

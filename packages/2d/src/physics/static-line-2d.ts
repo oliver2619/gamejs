@@ -1,16 +1,16 @@
 import { CollisionMnemento } from "./collision-mnemento";
 import { DynamicCircle } from "./dynamic-circle";
-import { StaticBodyData } from "./static-body";
-import { StaticBoxedBody } from "./static-boxed-body";
+import { StaticBody2dData } from "./static-body-2d";
+import { StaticBoxedBody2d } from "./static-boxed-body-2d";
 import { ForceConstraints } from "./force-constraints";
 import { Box2d, ReadonlyVector2d } from "@pluto/core";
 
-export interface StaticLineSegmentData extends StaticBodyData {
+export interface StaticLine2dData extends StaticBody2dData {
     p1: ReadonlyVector2d;
     p2: ReadonlyVector2d;
 }
 
-export class StaticLineSegment extends StaticBoxedBody {
+export class StaticLine2d extends StaticBoxedBody2d {
 
     readonly p1: ReadonlyVector2d;
     readonly p2: ReadonlyVector2d;
@@ -19,7 +19,7 @@ export class StaticLineSegment extends StaticBoxedBody {
     readonly offset: number;
     readonly length: number;
 
-    constructor(data: Readonly<StaticLineSegmentData>) {
+    constructor(data: Readonly<StaticLine2dData>) {
         super(data);
         this.p1 = data.p1.clone();
         this.p2 = data.p2.clone();

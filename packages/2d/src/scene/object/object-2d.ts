@@ -1,5 +1,5 @@
 import { AbstractReferencedObject, Box2d, CoordSystem2d, CoordSystem2dData, EventObservable, Observable, ReadonlyBox2d, ReadonlyCoordSystem2d } from "@pluto/core";
-import { Object2dPart } from "./object-2d-part";
+import { Object2dPart, Object2dPartContainer } from "./object-2d-part";
 import { Blend2dOperation } from "../../render";
 import { Material2d } from "../../material";
 import { RenderingContext2d } from "../../component/rendering-context-2d";
@@ -13,7 +13,7 @@ export interface Object2Data extends CoordSystem2dData {
     readonly visible?: boolean | undefined;
 }
 
-export class Object2d extends AbstractReferencedObject implements Object2dPart, Object2dBase {
+export class Object2d extends AbstractReferencedObject implements Object2dPart, Object2dBase, Object2dPartContainer {
 
     readonly name: string | undefined;
 
@@ -26,7 +26,7 @@ export class Object2d extends AbstractReferencedObject implements Object2dPart, 
 
     private _material: Material2d | undefined;
     private _visible: boolean;
-    private boundingBoxModified = false;
+    private boundingBoxModified = true;
     private _coordSystem: CoordSystem2d;
     private _parts: Object2dPart[] = [];
 
@@ -88,7 +88,7 @@ export class Object2d extends AbstractReferencedObject implements Object2dPart, 
         this._material?.addReference(this);
     }
 
-    add(obj: Object2dPart) {
+    addPart(obj: Object2dPart) {
         this._parts.push(obj);
         obj.addReference(this);
         obj.onBoundingBoxChanged.subscribe(this, () => {
@@ -105,7 +105,8 @@ export class Object2d extends AbstractReferencedObject implements Object2dPart, 
     clone(): Object2d {
         const ret = new Object2d({
             name: this.name,
-            axis: { x: this._coordSystem.xAxis, y: this._coordSystem.yAxis },
+            xAxis: this._coordSystem.xAxis,
+            yAxis: this._coordSystem.yAxis,
             position: this._coordSystem.position,
             alpha: this.alpha,
             blendOperation: this.blendOperation,
@@ -116,14 +117,25 @@ export class Object2d extends AbstractReferencedObject implements Object2dPart, 
         return ret;
     }
 
+    removePart(part: Object2dPart): void {
+        const i = this._parts.indexOf(part);
+        if (i < 0) {
+            throw new RangeError('Part not found.');
+        }
+        this._parts.splice(i, 1);
+        part.releaseReference(this);
+        part.onBoundingBoxChanged.unsubscribe(this);
+        part.onVisibilityChanged.unsubscribe(this);
+    }
+
     render(): void {
         if (this._visible) {
             RenderingContext2d.renderSafely(ctx => {
                 ctx.canvasRenderingContext.globalAlpha *= this.alpha;
-                this.material?.use();
-                ctx.canvasRenderingContext.transform(this._coordSystem.xAxis.x, this._coordSystem.yAxis.x, this._coordSystem.xAxis.y, this._coordSystem.yAxis.y, this._coordSystem.position.x, -this._coordSystem.position.y);
+                this._material?.use();
+                ctx.canvasRenderingContext.transform(this._coordSystem.xAxis.x, -this._coordSystem.xAxis.y, -this._coordSystem.yAxis.x, this._coordSystem.yAxis.y, this._coordSystem.position.x, -this._coordSystem.position.y);
                 if (this.blendOperation != undefined) {
-                    ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation.value;
+                    ctx.canvasRenderingContext.globalCompositeOperation = this.blendOperation;
                 }
                 this._parts.forEach(it => it.render());
             });

@@ -10,6 +10,7 @@
     "build-3d": "npm run build -w packages/3d",
     "build-network": "npm run build -w packages/network",
     "build-showcase": "npm run build -w packages/showcase",
+    "ng": "npm run ng -w packages/showcase",
     "start": "npm run start -w packages/showcase"
   },
   "private": true,
@@ -24,5 +25,8 @@
     "packages/core",
     "packages/network",
     "packages/showcase"
-  ]
+  ],
+  "dependencies": {
+    "showcase": "^0.0.0"
+  }
 }

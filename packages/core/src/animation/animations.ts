@@ -1,5 +1,4 @@
-import { ReadonlyColor } from "../../dist";
-import { Color } from "../color";
+import { Color, ReadonlyColor } from "../color";
 import { FiniteAnimationEvent, InfiniteAnimationEvent } from "./animation";
 
 type ExcludeType<T, P> = {

@@ -1,12 +1,12 @@
-import { Body } from "./body";
+import { Body2d } from "./body-2d";
 import { CollisionMnemento } from "./collision-mnemento";
 import { ForceConstraints } from "./force-constraints";
 import { DynamicCircle } from "./dynamic-circle";
-import { StaticBodyData } from "./static-body";
-import { StaticBoxedBody } from "./static-boxed-body";
-import { Box2d, ReadonlyVector2d, Vector2d } from "core";
+import { StaticBody2dData } from "./static-body-2d";
+import { StaticBoxedBody2d } from "./static-boxed-body-2d";
+import { Box2d, ReadonlyVector2d, Vector2d } from "@pluto/core";
 
-export interface StaticPolygonData extends StaticBodyData {
+export interface StaticPolygon2dData extends StaticBody2dData {
     points: ReadonlyVector2d[];
 }
 
@@ -26,7 +26,7 @@ class PolygonLineSegment {
         this.length = p2.getDistance(p1);
     }
 
-    getCollisionWithCircle(circle: DynamicCircle, mnemento: CollisionMnemento, body: Body) {
+    getCollisionWithCircle(circle: DynamicCircle, mnemento: CollisionMnemento, body: Body2d) {
         const speedDotProduct = circle.speed.getDotProduct(this.normal);
         if (speedDotProduct === 0) {
             return;
@@ -57,12 +57,12 @@ class PolygonLineSegment {
     }
 }
 
-export class StaticPolygon extends StaticBoxedBody {
+export class StaticPolygon2d extends StaticBoxedBody2d {
 
     private readonly points: Vector2d[];
     private readonly lineSegments: PolygonLineSegment[];
 
-    constructor(data: Readonly<StaticPolygonData>) {
+    constructor(data: Readonly<StaticPolygon2dData>) {
         super(data);
         if (data.points.length < 3) {
             throw new RangeError('Polygon must contain at least 3 points');

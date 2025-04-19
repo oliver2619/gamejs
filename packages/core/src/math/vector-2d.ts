@@ -168,6 +168,10 @@ export class Vector2d implements ReadonlyVector2d {
         return new Vector2d(this.x + v.x * f, this.y + v.y * f);
     }
 
+    isParallel(v: ReadonlyVector2d): boolean {
+        return this.x * v.y - this.y * v.x === 0;
+    }
+
     normalize(): number {
         let l = this.squareLength;
         if (l > 0 && l !== 1) {

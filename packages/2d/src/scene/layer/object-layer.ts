@@ -2,10 +2,10 @@ import { Box2d, QuadTree } from "@pluto/core";
 import { Material2d } from "../../material";
 import { Filter, FilterStack } from "../../render/filter";
 import { Layer, LayerData } from "./layer";
-import { Object2dPart } from "../object/object-2d-part";
-import { Camera2d } from "../camera-2d";
+import { Object2dPart, Object2dPartContainer } from "../object/object-2d-part";
+import { Camera2d, ReadonlyCamera2d } from "../camera-2d";
 import { RenderingContext2d } from "../../component/rendering-context-2d";
-import { PhysicsSystem } from "../../physics/physics-system";
+import { PhysicsSystem2d } from "../../physics/physics-system-2d";
 
 class ObjectLayerElement {
 
@@ -21,16 +21,19 @@ class ObjectLayerElement {
 }
 
 export interface ObjectLayerData extends LayerData {
-    alpha?: number;
-    filter?: Filter;
-    material?: Material2d;
+    alpha?: number | undefined;
+    filter?: Filter | undefined;
+    material?: Material2d | undefined;
+    physicsSystem?: PhysicsSystem2d | undefined;
+    localCameraScale?: number | undefined;
 }
 
-export class ObjectLayer extends Layer {
+export class ObjectLayer extends Layer implements Object2dPartContainer {
 
     alpha: number;
     filter: Filter;
-    physicsSystem: PhysicsSystem | undefined;
+    globalToLocalCamera: (globalCamera: ReadonlyCamera2d, localCamera: Camera2d) => void;
+    physicsSystem: PhysicsSystem2d | undefined;
 
     private _material: Material2d | undefined;
     private readonly localCamera = new Camera2d();
@@ -54,9 +57,15 @@ export class ObjectLayer extends Layer {
         this.filter = data?.filter == undefined ? FilterStack.createDefaultFilter() : { ...data?.filter };
         this._material = data?.material;
         this._material?.addReference(this);
+        this.physicsSystem = data?.physicsSystem;
+        const scale = data?.localCameraScale ?? 1;
+        this.globalToLocalCamera = (globalCamera, localCamera) => {
+            localCamera.updateCoordSystem(it => it.setCoordSystem(globalCamera.coordSystem));
+            localCamera.zoom = globalCamera.zoom * scale;
+        };
     }
 
-    add(part: Object2dPart) {
+    addPart(part: Object2dPart) {
         const item = new ObjectLayerElement(part, part.boundingBox.clone(), this, i => {
             this.objectTree.moveSolid(i, i.usedBoundingBox, i.object.boundingBox);
             i.usedBoundingBox.setBoundingBox(i.object.boundingBox);
@@ -68,11 +77,12 @@ export class ObjectLayer extends Layer {
         this.objectTree.rebuild({ minNumberOfElements });
     }
 
-    remove(part: Object2dPart) {
+    removePart(part: Object2dPart) {
         const item = this.objectTree.removeAtBox(it => it.object === part, part.boundingBox);
-        if (item != undefined) {
-            item.remove(this);
+        if (item == undefined) {
+            throw new RangeError('Part not found.');
         }
+        item.remove(this);
     }
 
     preRender(): void {
@@ -102,13 +112,15 @@ export class ObjectLayer extends Layer {
         }
     }
 
+    setLocalCameraScale(scale: number) {
+        this.globalToLocalCamera = (globalCamera, localCamera) => {
+            localCamera.updateCoordSystem(it => it.setCoordSystem(globalCamera.coordSystem));
+            localCamera.zoom = globalCamera.zoom * scale;
+        };
+    }
+
     protected override onDelete(): void {
         this._material?.releaseReference(this);
         this.objectTree.forEach(it => it.remove(this));
     }
-
-    private globalToLocalCamera(globalCamera: Camera2d, localCamera: Camera2d) {
-        localCamera.updateCoordSystem(it => it.setCoordSystem(globalCamera.coordSystem));
-        localCamera.zoom = globalCamera.zoom;
-    };
 }
