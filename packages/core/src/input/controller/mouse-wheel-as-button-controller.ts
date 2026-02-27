@@ -23,12 +23,16 @@ export class MouseWheelAsButtonController extends AbstractButtonController {
         this.description = `Wheel${this.axis.toUpperCase()} ${this.direction < 0 ? 'down' : 'up'}`;
     }
 
-    conflictsWith(other: InputController<number | boolean>): boolean {
+    conflictsWith(other: InputController<number | boolean | { readonly x: number, readonly y: number }>): boolean {
         return other.conflictsWithMouseWheel(this.axis);
     }
 
     override conflictsWithMouseWheel(axis: "x" | "y" | "z"): boolean {
         return this.axis === axis;
+    }
+
+    override forGamepad(_gamepad: number): InputController<boolean> {
+        return this;
     }
 
     save(): ButtonControllerJson {

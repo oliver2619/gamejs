@@ -6,14 +6,14 @@ export class EventObservable<T> implements Observable<T> {
     private readonly onceCallbacks: Array<(value: T) => void> = [];
 
     get hasSubscriptions(): boolean {
-        return this.callbacksByObserver.size > 0;
+        return this.callbacksByObserver.size > 0 || this.onceCallbacks.length > 0;
     }
 
     constructor(private readonly onSubscriptionsChange?: (hasSubscriptions: boolean) => void) { }
 
     next(value: T) {
         const cnt1 = this.callbacksByObserver.size + this.onceCallbacks.length;
-        this.callbacksByObserver.forEach((callback, _) => callback(value));
+        this.callbacksByObserver.forEach((callback, _observer) => callback(value));
         const cbs = this.onceCallbacks.slice(0);
         this.onceCallbacks.splice(0, this.onceCallbacks.length);
         cbs.forEach(it => it(value));

@@ -17,12 +17,16 @@ export class GamepadAxisAsButtonController extends AbstractButtonController {
         this.description = `Gamepad ${GamepadConstants.AXIS_STRING[this.axis]} ${this.threshold < 0 ? 'down' : 'up'}`;
     }
 
-    conflictsWith(other: InputController<number | boolean>): boolean {
+    conflictsWith(other: InputController<number | boolean | { readonly x: number, readonly y: number }>): boolean {
         return other.conflictsWithGamepadAxis(this.gamepad, this.axis, this.threshold);
     }
 
     override conflictsWithGamepadAxis(gamepad: number, axis: number, direction?: number): boolean {
         return this.gamepad === gamepad && this.axis === axis && (direction == undefined || this.threshold * direction > 0);
+    }
+
+    override forGamepad(gamepad: number): InputController<boolean> {
+        return new GamepadAxisAsButtonController(gamepad, this.axis, this.threshold);
     }
 
     save(): ButtonControllerJson {

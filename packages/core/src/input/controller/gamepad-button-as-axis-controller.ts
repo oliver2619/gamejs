@@ -14,12 +14,16 @@ export class GamepadButtonAsAxisController extends AbstractAxisController {
         this.description = `Gamepad ${GamepadConstants.BUTTON_STRING[this.button]}`;
     }
 
-    conflictsWith(other: InputController<number | boolean>): boolean {
+    conflictsWith(other: InputController<number | boolean | { readonly x: number, readonly y: number }>): boolean {
         return other.conflictsWithGamepadButton(this.gamepad, this.button);
     }
 
     override conflictsWithGamepadButton(gamepad: number, button: number): boolean {
         return this.gamepad === gamepad && this.button === button;
+    }
+
+    override forGamepad(gamepad: number): InputController<number> {
+        return new GamepadButtonAsAxisController(gamepad, this.button);
     }
 
     save(): AxisControllerJson {

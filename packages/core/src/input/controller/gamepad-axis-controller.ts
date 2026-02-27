@@ -18,12 +18,16 @@ export class GamepadAxisController extends AbstractAxisController {
         this.description = this.direction == undefined ? `Gamepad ${axisString}` : `Gamepad ${axisString} ${this.direction < 0 ? 'down' : 'up'}`;
     }
 
-    conflictsWith(other: InputController<number | boolean>): boolean {
+    conflictsWith(other: InputController<number | boolean | {readonly x: number, readonly y: number}>): boolean {
         return other.conflictsWithGamepadAxis(this.gamepad, this.axis, this.direction);
     }
 
     override conflictsWithGamepadAxis(gamepad: number, axis: number, direction?: number): boolean {
         return this.gamepad === gamepad && this.axis === axis && (this.direction == undefined || direction == undefined || this.direction * direction > 0);
+    }
+
+    override forGamepad(gamepad: number): InputController<number> {
+        return new GamepadAxisController(gamepad, this.axis, this.direction);
     }
 
     save(): AxisControllerJson {

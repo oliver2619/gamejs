@@ -1,4 +1,4 @@
-import { ButtonController } from "../input-controller";
+import { ButtonController, InputController } from "../input-controller";
 import { ButtonControllerJson } from "../input-controller-json";
 import { AbstractInputController } from "./abstract-input-controller";
 
@@ -9,6 +9,8 @@ export abstract class AbstractButtonController extends AbstractInputController<b
     constructor() {
         super(false);
     }
+
+    abstract forGamepad(gamepad: number): InputController<boolean>;
 
     reset(): void {
         this.setValue(false);

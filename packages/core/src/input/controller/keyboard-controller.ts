@@ -38,12 +38,16 @@ export class KeyboardController extends AbstractButtonController {
         }
     }
 
-    conflictsWith(other: InputController<number | boolean>): boolean {
+    conflictsWith(other: InputController<number | boolean | { readonly x: number, readonly y: number }>): boolean {
         return other.conflictsWithKeyboard(this.code);
     }
 
     override conflictsWithKeyboard(code: string): boolean {
         return this.code === code;
+    }
+
+    override forGamepad(_gamepad: number): InputController<boolean> {
+        return this;
     }
 
     save(): ButtonControllerJson {

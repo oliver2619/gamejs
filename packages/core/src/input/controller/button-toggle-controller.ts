@@ -19,7 +19,7 @@ export class ButtonToggleController extends AbstractInputController<boolean> {
         });
     }
 
-    override conflictsWith(other: InputController<number | boolean>): boolean {
+    override conflictsWith(other: InputController<number | boolean | {readonly x: number, readonly y: number}>): boolean {
         return this.button.conflictsWith(other);
     }
 
@@ -37,6 +37,10 @@ export class ButtonToggleController extends AbstractInputController<boolean> {
 
     override conflictsWithMouseWheel(axis: "x" | "y" | "z"): boolean {
         return this.button.conflictsWithMouseWheel(axis);
+    }
+
+    override forGamepad(gamepad: number): InputController<boolean> {
+        return new ButtonToggleController(this.button.forGamepad(gamepad) as ButtonController);
     }
 
     reset(): void {

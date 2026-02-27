@@ -5,6 +5,10 @@ export class ObservableValue<T> implements Observable<T> {
     private readonly callbacksByObserver = new Map<any, (value: T) => void>();
     private readonly onceCallbacks: Array<(value: T) => void> = [];
 
+    get hasSubscriptions(): boolean {
+        return this.callbacksByObserver.size > 0 || this.onceCallbacks.length > 0;
+    }
+
     get value(): T {
         return this._value;
     }

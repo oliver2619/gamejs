@@ -5,7 +5,7 @@ export interface InputSetJson {
 }
 
 export interface InputControllerJson {
-    readonly type: 'gamepadAxis' | 'gamepadButton' | 'gamepadButtonAxis' | 'gamepadAxisButton' | 'keyboard' | 'mouse' | 'mouseWheel' | 'toggle' | 'twoButtons';
+    readonly type: 'gamepadAxis' | 'gamepadDualAxes' | 'gamepadButton' | 'gamepadButtonAxis' | 'gamepadAxisButton' | 'keyboard' | 'mouse' | 'mouseWheel' | 'toggle' | 'twoButtons';
 }
 
 export interface ButtonControllerJson extends InputControllerJson {
@@ -21,6 +21,12 @@ export interface GamepadAxisControllerJson extends AxisControllerJson {
     readonly gamepad: number;
     readonly axis: number;
     readonly direction: number | undefined;
+}
+
+export interface GamepadDualAxesControllerJson extends InputControllerJson {
+    readonly type: 'gamepadDualAxes';
+    readonly gamepad: number;
+    readonly axis: number;
 }
 
 export interface GamepadButtonControllerJson extends ButtonControllerJson {

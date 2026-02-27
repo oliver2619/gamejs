@@ -1,8 +1,9 @@
 import { EventObservable } from "../../observable/event-observable";
 import { Observable } from "../../observable/observable";
 import { InputController } from "../input-controller";
+import { InputControllerJson } from "../input-controller-json";
 
-export abstract class AbstractInputController<V extends boolean | number> implements InputController<V> {
+export abstract class AbstractInputController<V extends boolean | number | { readonly x: number, readonly y: number }> implements InputController<V> {
 
     abstract readonly description: string;
     abstract readonly isButton: boolean;
@@ -25,7 +26,7 @@ export abstract class AbstractInputController<V extends boolean | number> implem
 
     protected constructor(private _value: V) { }
 
-    abstract conflictsWith(other: InputController<number | boolean>): boolean;
+    abstract conflictsWith(other: InputController<number | boolean | { readonly x: number, readonly y: number }>): boolean;
 
     conflictsWithGamepadAxis(_1: number, _2: number, _3?: number): boolean {
         return false;
@@ -47,11 +48,15 @@ export abstract class AbstractInputController<V extends boolean | number> implem
         return false;
     }
 
+    abstract forGamepad(gamepad: number): InputController<V>;
+
     poll() {
         if (this.enabledBy.size > 0) {
             this.updateValueFromPolling();
         }
     }
+
+    abstract save(): InputControllerJson;
 
     abstract reset(): void;
 

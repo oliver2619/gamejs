@@ -1,11 +1,11 @@
 import { EventObservable } from "../observable";
 import { Observable } from "../observable/observable";
 import { InputController } from "./input-controller";
-import { InputFactory } from "./input-controller-factory";
+import { InputControllerFactory } from "./input-controller-factory";
 import { InputControllerJson, InputSetJson } from "./input-controller-json";
 import { KeyboardLock } from "./keyboard-lock";
 
-class InputSetEntry<T extends number | boolean> {
+class InputSetEntry<T extends number | boolean | { readonly x: number, readonly y: number }> {
 
     private readonly pollingBasedInputs: InputController<T>[] = [];
     private readonly eventDrivenInputs: InputController<T>[] = [];
@@ -84,7 +84,7 @@ class InputSetEntry<T extends number | boolean> {
     }
 }
 
-export class InputSet<S extends { [K in keyof S]: number | boolean }> {
+export class InputSet<S extends { [K in keyof S]: number | boolean | { readonly x: number, readonly y: number } }> {
 
     private inputsByBinding: Partial<{ [K in keyof S]: InputSetEntry<S[K]> }> = {};
     private readonly enabledBy = new Set<any>();
@@ -114,7 +114,7 @@ export class InputSet<S extends { [K in keyof S]: number | boolean }> {
         this.inputsByBinding = {} as { [K in keyof S]: InputSetEntry<S[K]> };
     }
 
-    forEach(callback: (input: InputController<number | boolean>) => void) {
+    forEach(callback: (input: InputController<number | boolean | { readonly x: number, readonly y: number }>) => void) {
         for (let k in this.inputsByBinding) {
             this.inputsByBinding[k]!.forEach(callback);
         }
@@ -124,7 +124,7 @@ export class InputSet<S extends { [K in keyof S]: number | boolean }> {
         this.clearBindings();
         Object.entries(json.bindings).forEach(([key, bindings]) => {
             bindings.forEach(it => {
-                this.bind(key as keyof S, InputFactory.load(it) as InputController<S[keyof S]>);
+                this.bind(key as keyof S, InputControllerFactory.load(it) as InputController<S[keyof S]>);
             });
         });
     }
@@ -207,7 +207,7 @@ export class InputSet<S extends { [K in keyof S]: number | boolean }> {
         }
     }
 
-    private registerInput(binding: keyof S, input: InputController<number | boolean>) {
+    private registerInput(binding: keyof S, input: InputController<number | boolean | { readonly x: number, readonly y: number }>) {
         input.setEnabledBy(this, this.enabledBy.size > 0);
         input.onChange.subscribe(this, () => {
             const value = this.inputsByBinding[binding]!.getValue();
@@ -219,7 +219,7 @@ export class InputSet<S extends { [K in keyof S]: number | boolean }> {
         });
     }
 
-    private unregisterInput(input: InputController<number | boolean>) {
+    private unregisterInput(input: InputController<number | boolean | { readonly x: number, readonly y: number }>) {
         input.reset();
         input.setEnabledBy(this, false);
         input.onChange.unsubscribe(this);

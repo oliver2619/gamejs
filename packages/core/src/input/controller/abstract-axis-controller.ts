@@ -1,4 +1,4 @@
-import { AxisController } from "../input-controller";
+import { AxisController, InputController } from "../input-controller";
 import { AxisControllerJson } from "../input-controller-json";
 import { AbstractInputController } from "./abstract-input-controller";
 
@@ -9,6 +9,8 @@ export abstract class AbstractAxisController extends AbstractInputController<num
     constructor() {
         super(0);
     }
+
+    abstract forGamepad(gamepad: number): InputController<number>;
 
     reset(): void {
         this.setValue(0);

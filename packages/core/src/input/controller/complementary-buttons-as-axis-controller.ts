@@ -20,7 +20,7 @@ export class ComplementaryButtonsAsAxisController extends AbstractInputControlle
         buttonUp.onChange.subscribe(this, this.onButtonsValueChange);
     }
 
-    conflictsWith(other: InputController<number | boolean>): boolean {
+    conflictsWith(other: InputController<number | boolean | { readonly x: number, readonly y: number }>): boolean {
         return this.buttonDown.conflictsWith(other) || this.buttonUp.conflictsWith(other);
     }
 
@@ -38,6 +38,10 @@ export class ComplementaryButtonsAsAxisController extends AbstractInputControlle
 
     override conflictsWithMouseWheel(axis: "x" | "y" | "z"): boolean {
         return this.buttonDown.conflictsWithMouseWheel(axis) || this.buttonUp.conflictsWithMouseWheel(axis);
+    }
+
+    override forGamepad(gamepad: number): InputController<number> {
+        return new ComplementaryButtonsAsAxisController(this.buttonDown.forGamepad(gamepad) as ButtonController, this.buttonUp.forGamepad(gamepad) as ButtonController);
     }
 
     save(): AxisControllerJson {

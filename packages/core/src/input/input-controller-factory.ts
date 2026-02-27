@@ -4,13 +4,14 @@ import { GamepadAxisAsButtonController } from "./controller/gamepad-axis-as-butt
 import { GamepadAxisController } from "./controller/gamepad-axis-controller";
 import { GamepadButtonAsAxisController } from "./controller/gamepad-button-as-axis-controller";
 import { GamepadButtonController } from "./controller/gamepad-button-controller";
+import { GamepadDualAxesController } from "./controller/gamepad-dual-axes-controller";
 import { KeyboardController } from "./controller/keyboard-controller";
 import { MouseButtonController } from "./controller/mouse-button-controller";
 import { MouseWheelAsButtonController } from "./controller/mouse-wheel-as-button-controller";
-import { AxisController, ButtonController, InputController } from "./input-controller";
-import { ButtonToggleControllerJson, ComplementaryButtonsAsAxisControllerJson, GamepadAxisAsButtonControllerJson, GamepadAxisControllerJson, GamepadButtonAsAxisControllerJson, GamepadButtonControllerJson, InputControllerJson, KeyboardControllerJson, MouseControllerJson, MouseWheelControllerJson } from "./input-controller-json";
+import { AxisController, ButtonController, DualAxesController, InputController } from "./input-controller";
+import { ButtonToggleControllerJson, ComplementaryButtonsAsAxisControllerJson, GamepadDualAxesControllerJson, GamepadAxisAsButtonControllerJson, GamepadAxisControllerJson, GamepadButtonAsAxisControllerJson, GamepadButtonControllerJson, InputControllerJson, KeyboardControllerJson, MouseControllerJson, MouseWheelControllerJson } from "./input-controller-json";
 
-export class InputFactory {
+export class InputControllerFactory {
 
     private constructor() { }
 
@@ -30,11 +31,15 @@ export class InputFactory {
         return new GamepadAxisAsButtonController(gamepadIndex, axis, threshold);
     }
 
+    static gamepadDualAxes(gamepadIndex: number, axis: number): DualAxesController {
+        return new GamepadDualAxesController(gamepadIndex, axis);
+    }
+
     static keyboard(code: string): ButtonController {
         return new KeyboardController(code);
     }
 
-    static load(json: InputControllerJson): InputController<number | boolean> {
+    static load(json: InputControllerJson): InputController<number | boolean | { readonly x: number, readonly y: number }> {
         switch (json.type) {
             case 'gamepadAxis':
                 return this.loadGamepadAxis(json as GamepadAxisControllerJson);
@@ -44,6 +49,8 @@ export class InputFactory {
                 return this.loadGamepadButtonAxis(json as GamepadButtonAsAxisControllerJson);
             case 'gamepadAxisButton':
                 return this.loadGamepadAxisButton(json as GamepadAxisAsButtonControllerJson);
+            case 'gamepadDualAxes':
+                return this.loadGamepadDualAxes(json as GamepadDualAxesControllerJson);
             case 'keyboard':
                 return this.loadKeyboard(json as KeyboardControllerJson);
             case 'mouse':
@@ -89,6 +96,7 @@ export class InputFactory {
                 return this.loadToggle(json as ButtonToggleControllerJson);
             case 'gamepadAxis':
             case 'gamepadButtonAxis':
+            case 'gamepadDualAxes':
             case 'twoButtons':
                 throw new RangeError(`Expected input type button and not axis.`);
         }
@@ -108,6 +116,10 @@ export class InputFactory {
 
     private static loadGamepadButtonAxis(json: GamepadButtonAsAxisControllerJson): AxisController {
         return this.gamepadButtonAsAxis(json.gamepad, json.button);
+    }
+
+    private static loadGamepadDualAxes(json: GamepadDualAxesControllerJson): DualAxesController {
+        return this.gamepadDualAxes(json.gamepad, json.axis)
     }
 
     private static loadKeyboard(json: KeyboardControllerJson): ButtonController {

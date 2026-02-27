@@ -1,10 +1,14 @@
+import { Observable } from "../observable";
 import { EventObservable } from "../observable/event-observable";
 
 const gamepads: number[] = [];
+const onChange = new EventObservable<void>();
 
 export class Gamepads {
 
-    static readonly onChange = new EventObservable<void>();
+    static get onChange(): Observable<void> {
+        return onChange;
+    }
 
     static get size(): number {
         return gamepads.length;
@@ -29,7 +33,7 @@ function updateGamepads() {
             gamepads.push(ix);
         }
     });
-    Gamepads.onChange.next();
+    onChange.next();
 }
 
 window.addEventListener('gamepadconnected', (_: GamepadEvent) => updateGamepads());

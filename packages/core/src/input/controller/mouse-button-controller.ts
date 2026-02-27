@@ -25,12 +25,16 @@ export class MouseButtonController extends AbstractButtonController {
         this.description = `Mouse${this.button + 1}`;
     }
 
-    conflictsWith(other: InputController<number | boolean>): boolean {
+    conflictsWith(other: InputController<number | boolean | {readonly x: number, readonly y: number}>): boolean {
         return other.conflictsWithMouseButton(this.button);
     }
 
     override conflictsWithMouseButton(button: number): boolean {
         return this.button === button;
+    }
+
+    override forGamepad(_gamepad: number): InputController<boolean> {
+        return this;
     }
 
     save(): ButtonControllerJson {
