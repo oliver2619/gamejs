@@ -98,7 +98,7 @@ export class ImageCache {
     static getAll<T>(...idList: Array<keyof T>): Promise<{ [P in keyof T]: ImageResource }> {
         const promises = idList.map(it => this.get(it as string));
         return Promise.all(promises).then(it => {
-            const ret: { [P in keyof T]: ImageResource } = {} as { [P in keyof T]: ImageResource };
+            const ret = {} as { [P in keyof T]: ImageResource };
             idList.forEach((name, ix) => ret[name] = it[ix]!);
             return ret;
         });

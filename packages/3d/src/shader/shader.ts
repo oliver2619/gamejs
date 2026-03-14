@@ -1,40 +1,59 @@
-import { ReferencedObject, ReferencedObjects } from "@ge/common";
+import { AbstractReferencedObject } from "@pluto/core";
 import { Context3d } from "../context";
 import { Error3d } from "../error-3d";
+import { ShaderPrecision } from "./shader-precision";
 
-export abstract class Shader implements ReferencedObject {
+const VERSION = '300';
+
+export abstract class Shader extends AbstractReferencedObject {
 
     readonly shader: WebGLShader;
-    private readonly referencedObject = ReferencedObjects.create(() => this.onDelete());
+    protected readonly context: Context3d;
 
-    protected constructor(protected readonly context: Context3d, type: GLenum, source: string) {
-        const shader = context.gl.createShader(type);
+    protected constructor(type: GLenum, data: {
+        context: Context3d,
+        source: string,
+        floatPrecision?: ShaderPrecision,
+        precision?: ShaderPrecision,
+    }) {
+        super();
+        this.context = data.context;
+        const shader = this.context.gl.createShader(type);
         if (shader == null) {
-            Error3d.throwError('Failed to create shader.', context.gl);
+            Error3d.throwError(this.context.gl, 'Failed to create shader.');
         }
         this.shader = shader;
-        context.gl.shaderSource(shader, source);
-        context.gl.compileShader(shader);
-        const status = context.gl.getShaderParameter(shader, WebGLRenderingContext.COMPILE_STATUS);
-        if(!status) {
-            const info = context.gl.getShaderInfoLog(shader);
-            if(info != null) {
-                console.error(info);
-            }
-            console.error(source);
-            Error3d.throwError('Failed to compile shader.', context.gl);
+        try {
+            this.create(data.source, this.context.gl, data.precision ?? this.context.shaderPrecision, data.floatPrecision ?? this.context.shaderPrecision);
+        } catch (e) {
+            this.context.gl.deleteShader(this.shader);
+            throw e;
         }
     }
 
-    addReference(owner: any): void {
-        this.referencedObject.addReference(owner);
+    private create(source: string, gl: WebGL2RenderingContext, precision: ShaderPrecision, floatPrecision: ShaderPrecision) {
+        const code = this.createFinalCode(source, precision, floatPrecision);
+        gl.shaderSource(this.shader, code);
+        gl.compileShader(this.shader);
+        const status = gl.getShaderParameter(this.shader, WebGLRenderingContext.COMPILE_STATUS);
+        if (!status) {
+            const info = gl.getShaderInfoLog(this.shader);
+            if (info != null) {
+                console.error(info);
+            }
+            console.error(code.split('\n').map((l, i) => `${i + 1}: ${l}`).join('\n'));
+            Error3d.throwError(gl, 'Failed to compile shader.');
+        }
     }
 
-    releaseReference(owner: any): void {
-        this.referencedObject.releaseReference(owner);
+    private createFinalCode(code: string, precision: ShaderPrecision, floatPrecision: ShaderPrecision): string {
+        const header = `#version ${VERSION} es`;
+        const precisions = ['int', 'sampler2D', 'samplerCube', 'isampler2D', 'usampler2D'].map(t => `precision ${precision} ${t};`).join('\n');
+        const floatPrec = `precision ${floatPrecision} float;`;
+        return `${header}\n${precisions}\n${floatPrec}\n${code}`;
     }
 
-    private onDelete() {
+    protected override onDelete(): void {
         this.context.gl.deleteShader(this.shader);
     }
 }

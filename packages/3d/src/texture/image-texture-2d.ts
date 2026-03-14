@@ -1,60 +1,62 @@
-import { ReadonlyVector2d, Vector2d } from "@ge/common";
+import { ImageObject, ReadonlyVector2d, Vector2d } from "@pluto/core";
 import { Context3d } from "../context";
-import { AbstractTexture, ColorTexture, ImageTexture, Texture2d, TextureMipmapGenerator, TextureWrap } from "./texture";
+import { StaticTextureImageSource, TextureMipmapGenerator, TextureWrap } from "./texture";
+import { Error3d } from "../error-3d";
+import { AbstractColorTexture2d } from "./abstract-color-texture-2d";
 
-// TODO texSubImage
+export class ImageTexture2d extends AbstractColorTexture2d {
 
-export class ImageTexture2d extends AbstractTexture implements ColorTexture, Texture2d, ImageTexture {
+    private readonly _size = new Vector2d(0, 0);
+    private _alpha = false;
+    private _format: GLenum = WebGLRenderingContext.RGB;
 
-    readonly alpha: boolean;
-    physicalSize: Vector2d;
-
-    private _wrapS: TextureWrap;
-    private _wrapT: TextureWrap;
-
-    get wrapS(): TextureWrap {
-        return this._wrapS;
+    get alpha(): boolean {
+        return this._alpha;
     }
 
-    set wrapS(w: TextureWrap) {
-        if (this._wrapS !== w) {
-            this._wrapS = w;
-            this.setParameterModified();
-        }
-    }
-
-    get wrapT(): TextureWrap {
-        return this._wrapT;
-    }
-
-    set wrapT(w: TextureWrap) {
-        if (this._wrapT !== w) {
-            this._wrapT = w;
-            this.setParameterModified();
-        }
+    get size(): ReadonlyVector2d {
+        return this._size;
     }
 
     constructor(context: Context3d, data: {
-        image: TexImageSource,
-        alpha?: boolean,
-        mipmaps?: TextureMipmapGenerator,
-        magFilter?: boolean,
-        minFilter?: boolean,
-        wrapS?: TextureWrap,
-        wrapT?: TextureWrap,
-        physicalSize?: ReadonlyVector2d
+        alpha?: boolean | undefined,
+        anisotropy?: number | undefined,
+        image: StaticTextureImageSource,
+        magFilter?: boolean | undefined,
+        minFilter?: boolean | undefined,
+        mipmaps?: TextureMipmapGenerator | undefined,
+        physicalSize?: ReadonlyVector2d | undefined,
+        wrapS?: TextureWrap | undefined,
+        wrapT?: TextureWrap | undefined,
     }) {
-        super(context, WebGLRenderingContext.TEXTURE_2D, data);
-        this.alpha = data.alpha ?? false;
-        this.physicalSize = data.physicalSize?.clone() ?? new Vector2d(1, 1);
-        this._wrapS = data.wrapS ?? TextureWrap.REPEAT;
-        this._wrapT = data.wrapT ?? TextureWrap.REPEAT;
-        const format = this.alpha ? WebGLRenderingContext.RGBA : WebGLRenderingContext.RGB
-        this.context.gl.texImage2D(this.target, 0, format, format, WebGLRenderingContext.UNSIGNED_BYTE, data.image);
+        super(context, data);
+        try {
+            this.setImage(data.image, data.alpha);
+        } catch (e) {
+            context.gl.deleteTexture(this.texture);
+            throw e;
+        }
     }
 
-    protected override applyWrap(): void {
-        this.context.gl.texParameteri(this.target, WebGLRenderingContext.TEXTURE_WRAP_S, this._wrapS);
-        this.context.gl.texParameteri(this.target, WebGLRenderingContext.TEXTURE_WRAP_T, this._wrapT);
+    setImage(image: StaticTextureImageSource, alpha?: boolean) {
+        const imageObject = new ImageObject(image, alpha);
+        const targetWidth = this.context.roundTexture2dLength(imageObject.width);
+        const targetHeight = this.context.roundTexture2dLength(imageObject.height);
+        const imageObjectScaled = imageObject.resized(targetWidth, targetHeight);
+        const format = imageObjectScaled.alpha ? WebGLRenderingContext.RGBA : WebGLRenderingContext.RGB
+        this.update(() => {
+            Error3d.execute(() => this.context.gl.texImage2D(this.target, 0, format, format, WebGLRenderingContext.UNSIGNED_BYTE, imageObjectScaled.staticTextureImageSource), this.context.gl);
+            this.setImageModified();
+        });
+        this._alpha = imageObjectScaled.alpha;
+        this._size.set(imageObjectScaled.width, imageObjectScaled.height);
+        this._format = format;
+    }
+
+    updateImage(image: StaticTextureImageSource) {
+        this.update(() => {
+            this.context.gl.texSubImage2D(this.target, 0, 0, 0, Math.min(this._size.x, image.width), Math.min(this._size.y, image.height), this._format, WebGLRenderingContext.UNSIGNED_BYTE, image);
+            this.setImageModified();
+        });
     }
 }

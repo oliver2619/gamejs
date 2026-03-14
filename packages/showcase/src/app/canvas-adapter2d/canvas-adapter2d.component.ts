@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CanvasAdapter2d } from '@pluto/2d';
-import { CanvasAdapter2dRouteData } from '../canvas-adapter2d-route-data';
+import { CanvasAdapter2dRouteData } from '../canvas-adapter-route-data';
 import { Showcase2d } from '../showcase-2d';
 import { PromisesProgress } from '@pluto/core';
 

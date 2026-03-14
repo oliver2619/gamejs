@@ -1,0 +1,5 @@
+@use '../../style/content';
+
+:host {
+    @include content.default;
+}

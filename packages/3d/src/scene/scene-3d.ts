@@ -1,4 +1,4 @@
-import { ReferencedObject } from "@ge/common";
+import { ReferencedObject } from "@pluto/core";
 import { Fog } from "./fog/fog";
 import { Background3d } from "./background/background-3d";
 import { Light } from "./light/light";

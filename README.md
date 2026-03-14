@@ -1,10 +1,32 @@
 # gamejs
 
-
 ## Core
 
 * Math
     * Matrix4?
+
+## 3d
+
+* rendertotexture: multiple color targets only for webgl2
+* render viewports -> viewports change -> clear caches?
+* what if the viewport changes only a bit and caches dont need to be cleared?
+
+### mesh
+  * geometry-mesh-builder
+  * geometry-mesh-lod-builder
+  * lod solid & builder
+  * mesh builder
+  * transparent mesh & builder
+
+* deferred rendering pipeline
+* scene
+* shader
+* texture3d
+* vertexarraybuilder
+* light
+* background
+* fog
+* camera
 
 ## 2d
 
@@ -31,7 +53,5 @@
 - quadtree, octtree: rebuild heterogen (divide as required and not at center)
 - object / solid builder
 - solid, buffered layer: shadow
-
-## 3d
 
 ## Showcase

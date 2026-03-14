@@ -1,0 +1,1 @@
+export type ShaderPrecision = 'lowp' | 'mediump' | 'highp';

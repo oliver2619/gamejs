@@ -10,8 +10,10 @@
     "build-3d": "npm run build -w packages/3d",
     "build-network": "npm run build -w packages/network",
     "build-showcase": "npm run build -w packages/showcase",
+    "clean-cache": "npm run clean -w packages/showcase",
     "ng": "npm run ng -w packages/showcase",
-    "start": "npm run start -w packages/showcase"
+    "start": "npm run start -w packages/showcase",
+    "restart-3d": "npm run build-3d && npm run clean-cache && npm start"
   },
   "private": true,
   "keywords": [],

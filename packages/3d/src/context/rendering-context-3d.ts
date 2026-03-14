@@ -1,6 +1,6 @@
-import { ReadonlyRect2d } from "@ge/common";
 import { Context3d } from "./context-3d";
 import { Camera3d } from "../scene/camera/camera-3d";
+import { ReadonlyRectangle } from "@pluto/core";
 
 let current: RenderingContext3d | undefined;
 
@@ -17,9 +17,9 @@ export class RenderingContext3d {
         return this.current.context.gl;
     }
 
-    private constructor(readonly context: Context3d, readonly viewport: ReadonlyRect2d, readonly camera: Camera3d, readonly recursionDepth: number, readonly aspect: number) { }
+    private constructor(readonly context: Context3d, readonly viewport: ReadonlyRectangle, readonly camera: Camera3d, readonly recursionDepth: number, readonly aspect: number) { }
 
-    static render(viewport: ReadonlyRect2d, camera: Camera3d, callback: () => void) {
+    static render(viewport: ReadonlyRectangle, camera: Camera3d, callback: () => void) {
         const ctx = new RenderingContext3d(Context3d.current, viewport, camera, 0, 1);
         const last = current;
         current = ctx;

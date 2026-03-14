@@ -1,6 +1,7 @@
+import { ReferencedObject } from "@pluto/core";
 import { Scene3d } from "../scene/scene-3d";
 
-export interface SceneRenderingPipeline {
+export interface SceneRenderingPipeline extends ReferencedObject {
 
     render(scene: Scene3d): void;
 }

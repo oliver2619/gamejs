@@ -1,4 +1,4 @@
-import { ReferencedObject } from "@ge/common";
+import { ReferencedObject } from "@pluto/core";
 
 export interface Background3d extends ReferencedObject {
 

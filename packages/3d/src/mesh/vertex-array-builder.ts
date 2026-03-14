@@ -1,6 +1,6 @@
-import { Color, ReadonlyVector3d, Vector3d } from "@ge/common";
 import { VertexArray, VertexArrayGroup, VertexArrayMode } from "./vertex-array";
 import { Context3d } from "../context/context-3d";
+import { Color, ReadonlyVector3d, Vector3d } from "@pluto/core";
 
 class VertexArrayElement {
 
@@ -86,24 +86,24 @@ class VertexArrayGroupBuilderImpl implements VertexArrayGroupBuilder {
         return this;
     }
 
-    build(): VertexArrayGroup {
-        if (this.mode === VertexArrayMode.POINTS && this.elements.length < 1) {
-            throw new Error('At least one vertex must be defined in a group for mode POINTS.');
-        }
-        if ((this.mode === VertexArrayMode.LINES || this.mode === VertexArrayMode.LINE_LOOP || this.mode === VertexArrayMode.LINE_STRIP) && this.elements.length < 2) {
-            throw new Error('At least two vertices must be defined in a group for any line mode.');
-        }
-        if (this.mode === VertexArrayMode.LINES && (this.elements.length % 2) !== 0) {
-            throw new Error('Number of vertices in mode LINES must be a multiple of two.');
-        }
-        if ((this.mode === VertexArrayMode.TRIANGLES || this.mode === VertexArrayMode.TRIANGLE_FAN || this.mode === VertexArrayMode.TRIANGLE_STRIP) && this.elements.length < 3) {
-            throw new Error('At least three vertices must be defined in a group for any triangle mode.');
-        }
-        if (this.mode === VertexArrayMode.TRIANGLES && (this.elements.length % 3) !== 0) {
-            throw new Error('Number of vertices in mode TRIANGLES must be a multiple of three.');
-        }
-        return new VertexArrayGroup(this.mode, this.elements.map(it => it.point));
-    }
+    // build(): VertexArrayGroup {
+    //     if (this.mode === VertexArrayMode.POINTS && this.elements.length < 1) {
+    //         throw new Error('At least one vertex must be defined in a group for mode POINTS.');
+    //     }
+    //     if ((this.mode === VertexArrayMode.LINES || this.mode === VertexArrayMode.LINE_LOOP || this.mode === VertexArrayMode.LINE_STRIP) && this.elements.length < 2) {
+    //         throw new Error('At least two vertices must be defined in a group for any line mode.');
+    //     }
+    //     if (this.mode === VertexArrayMode.LINES && (this.elements.length % 2) !== 0) {
+    //         throw new Error('Number of vertices in mode LINES must be a multiple of two.');
+    //     }
+    //     if ((this.mode === VertexArrayMode.TRIANGLES || this.mode === VertexArrayMode.TRIANGLE_FAN || this.mode === VertexArrayMode.TRIANGLE_STRIP) && this.elements.length < 3) {
+    //         throw new Error('At least three vertices must be defined in a group for any triangle mode.');
+    //     }
+    //     if (this.mode === VertexArrayMode.TRIANGLES && (this.elements.length % 3) !== 0) {
+    //         throw new Error('Number of vertices in mode TRIANGLES must be a multiple of three.');
+    //     }
+    //     return new VertexArrayGroup(this.mode, this.elements.map(it => it.point));
+    // }
 
     color(layer: number, ...args: any[]): VertexArrayGroupBuilder {
         if (layer < 0 || layer >= this.currentColors.length) {
@@ -117,7 +117,7 @@ class VertexArrayGroupBuilderImpl implements VertexArrayGroupBuilder {
             this.colorMappings[layer] = args[0];
         } else {
             this.colorMappings[layer] = undefined;
-            this.currentColors[layer]!.set(args[0]);
+            this.currentColors[layer]!.setColor(args[0]);
         }
         return this;
     }
@@ -131,7 +131,7 @@ class VertexArrayGroupBuilderImpl implements VertexArrayGroupBuilder {
             this.normalMapping = args[0];
         } else {
             this.normalMapping = undefined;
-            this.currentNormal.set(args[0]);
+            this.currentNormal.setVector(args[0]);
             this.currentNormal.normalize();
         }
         return this;
@@ -150,7 +150,7 @@ class VertexArrayGroupBuilderImpl implements VertexArrayGroupBuilder {
             this.tangentMappings[layer] = args[0];
         } else {
             this.tangentMappings[layer] = undefined;
-            this.currentTangents[layer]!.set(args[0]);
+            this.currentTangents[layer]!.setVector(args[0]);
             this.currentTangents[layer]!.normalize();
         }
         return this;
@@ -171,7 +171,7 @@ class VertexArrayGroupBuilderImpl implements VertexArrayGroupBuilder {
             this.texCoordsMappings[layer] = args[0];
         } else {
             this.texCoordsMappings[layer] = undefined;
-            this.currentTexCoords[layer]!.set(args[0]);
+            this.currentTexCoords[layer]!.setVector(args[0]);
         }
         return this;
     }
@@ -197,21 +197,21 @@ class VertexArrayGroupBuilderImpl implements VertexArrayGroupBuilder {
         }
         const point = this.points[pointRef]!;
         if (this.normalMapping != undefined) {
-            this.currentNormal.set(this.normalMapping(point).normalized());
+            this.currentNormal.setVector(this.normalMapping(point).getNormalized());
         }
         this.tangentMappings.forEach((m, i) => {
             if (m != undefined) {
-                this.currentTangents[i]!.set(m(point, this.currentNormal).normalized());
+                this.currentTangents[i]!.setVector(m(point, this.currentNormal).getNormalized());
             }
         });
         this.texCoordsMappings.forEach((m, i) => {
             if (m != undefined) {
-                this.currentTexCoords[i]!.set(m(point, this.currentNormal, this.currentTangents[i]!));
+                this.currentTexCoords[i]!.setVector(m(point, this.currentNormal, this.currentTangents[i]!));
             }
         });
         this.colorMappings.forEach((m, i) => {
             if (m != undefined) {
-                this.currentColors[i]!.set(m(point, this.currentNormal));
+                this.currentColors[i]!.setColor(m(point, this.currentNormal));
             }
         });
         this.attributeMappings.forEach((m, i) => {
@@ -219,7 +219,10 @@ class VertexArrayGroupBuilderImpl implements VertexArrayGroupBuilder {
                 this.currentAttributes[i] = m(point, this.currentNormal);
             }
         });
-        this.elements.push(new VertexArrayElement(pointRef, this.currentNormal.clone(), this.currentTexCoords.map(it => it.clone()), this.currentTangents.map(it => it.clone()), this.currentColors.map(it => it.clone()), attributes));
+
+        // FIXME what to do?
+
+        // this.elements.push(new VertexArrayElement(pointRef, this.currentNormal.clone(), this.currentTexCoords.map(it => it.clone()), this.currentTangents.map(it => it.clone()), this.currentColors.map(it => it.clone()), attributes));
         return this;
     }
 }
@@ -241,10 +244,10 @@ export class VertexArrayBuilder {
         }
     }
 
-    build(context: Context3d): VertexArray {
-        const groups = this.groups.map(it => it.build());
-        return new VertexArray(context, this.points, groups);
-    }
+    // build(context: Context3d): VertexArray {
+    //     const groups = this.groups.map(it => it.build());
+    //     return new VertexArray(context, this.points, groups);
+    // }
 
     group(mode: VertexArrayMode): VertexArrayGroupBuilder {
         const group = new VertexArrayGroupBuilderImpl(mode, this.points, this.textureLayers, this.colors, this.attributes);

@@ -22,6 +22,20 @@ export class ImageObject {
         return this._imageData;
     }
 
+    get staticTextureImageSource(): ImageBitmap | ImageData | HTMLImageElement | HTMLCanvasElement | OffscreenCanvas {
+        if (this._image != undefined) {
+            if (this._image instanceof SVGImageElement) {
+                return this.imageData;
+            } else {
+                return this._image;
+            }
+        } else if (this._imageData != undefined) {
+            return this._imageData;
+        } else {
+            throw new Error('No image defined');
+        }
+    }
+
     constructor(image: HTMLImageElement | SVGImageElement | HTMLCanvasElement | ImageBitmap | ImageData | OffscreenCanvas | CanvasRenderingContext2D, alpha?: boolean) {
         if (image instanceof SVGImageElement) {
             this.width = image.width.baseVal.value;
@@ -63,7 +77,21 @@ export class ImageObject {
         context.drawImage(this.canvasImageSource, left, (1 - this.height) * scale - bottom, this.width * scale, this.height * scale);
     }
 
+    resized(width: number, height: number): ImageObject {
+        if (width === this.width && height === this.height) {
+            return this;
+        }
+        const canvas = ImageObject.createNewCanvas(width, height);
+        const context = ImageObject.getCanvasRenderingContextFromCanvas(canvas, this.alpha);
+        this.paintScaledIntoOtherContext(context);
+        return new ImageObject(canvas, this.alpha);
+
+    }
+
     withoutAlpha(): ImageObject {
+        if (!this.alpha) {
+            return this;
+        }
         const canvas = ImageObject.createNewCanvas(this.width, this.height);
         const context = ImageObject.getCanvasRenderingContextFromCanvas(canvas, false);
         this.paintIntoContext(context);
@@ -134,5 +162,11 @@ export class ImageObject {
         } else {
             throw new Error('Failed to paint into 2d context');
         }
+    }
+
+    private paintScaledIntoOtherContext(context: CanvasRenderingContext2D) {
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = 'high';
+        context.drawImage(this.canvasImageSource, 0, 0, context.canvas.width, context.canvas.height);
     }
 }

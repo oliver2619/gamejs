@@ -1,49 +1,59 @@
-import { ReferencedObject, ReferencedObjects } from "@ge/common";
 import { Context3d } from "../context";
 import { Shader } from "./shader";
 import { Error3d } from "../error-3d";
+import { AbstractReferencedObject } from "@pluto/core";
 
-export class ShaderProgram implements ReferencedObject {
+export class ShaderProgram extends AbstractReferencedObject {
 
-    private readonly referencedObject = ReferencedObjects.create(() => this.onDelete());
     private readonly program: WebGLProgram;
     private readonly shaders: Shader[];
 
     constructor(private readonly context: Context3d, shaders: Shader[]) {
-        this.shaders = shaders.slice(0);
+        super();
         this.program = context.gl.createProgram();
-        shaders.forEach(it => {
-            it.addReference(this);
-            context.gl.attachShader(this.program, it.shader);
-        });
-        context.gl.linkProgram(this.program);
-        const status = context.gl.getProgramParameter(this.program, WebGLRenderingContext.LINK_STATUS);
-        if (!status) {
-            const info = context.gl.getProgramInfoLog(this.program);
-            if (info != null) {
-                console.error(info);
-            }
-            Error3d.throwError('Failed to create program', context.gl);
+        try {
+            this.create(shaders, context.gl);
+        } catch (e) {
+            context.gl.deleteProgram(this.program);
+            throw e;
         }
-    }
-
-    addReference(owner: any): void {
-        this.referencedObject.addReference(owner);
+        this.shaders = shaders.slice(0);
+        this.shaders.forEach(it => {
+            it.addReference(this);
+        });
     }
 
     bindAttribLocation(index: GLuint, name: string) {
         this.context.gl.bindAttribLocation(this.program, index, name);
     }
 
-    releaseReference(owner: any): void {
-        this.referencedObject.releaseReference(owner);
-    }
-
     use() {
         this.context.gl.useProgram(this.program);
     }
 
-    private onDelete() {
+    private create(shaders: Shader[], gl: WebGL2RenderingContext) {
+        shaders.forEach(it => {
+            gl.attachShader(this.program, it.shader);
+        });
+        try {
+            gl.linkProgram(this.program);
+            const status = gl.getProgramParameter(this.program, WebGLRenderingContext.LINK_STATUS);
+            if (!status) {
+                const info = gl.getProgramInfoLog(this.program);
+                if (info != null) {
+                    console.error(info);
+                }
+                Error3d.throwError(gl, 'Failed to create program.');
+            }
+        } catch (e) {
+            shaders.forEach(it => {
+                gl.detachShader(this.program, it.shader);
+            });
+            throw e;
+        }
+    }
+
+    protected onDelete() {
         this.shaders.forEach(it => {
             this.context.gl.detachShader(this.program, it.shader);
             it.releaseReference(this);

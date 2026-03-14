@@ -1,4 +1,4 @@
-import { Color, ReferencedObject, Vector3d } from "@ge/common";
+import { Color, ReferencedObject, Vector3d } from "@pluto/core";
 
 export interface Light extends ReferencedObject {
 
