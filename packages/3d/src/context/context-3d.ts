@@ -8,6 +8,7 @@ export interface Context3dInitData {
     antialias: boolean,
     shaderPrecision: ShaderPrecision,
 }
+
 export abstract class Context3d {
 
     readonly antialias: boolean;

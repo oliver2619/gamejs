@@ -3,6 +3,7 @@ import { Context3d, Context3dInitData } from "../context/context-3d";
 import { Viewport3d } from "./viewport-3d";
 import { CanvasAdapter } from "@pluto/core";
 import { ShaderPrecision } from "../shader";
+import '../api';
 
 class Context3dImpl extends Context3d {
 
@@ -39,16 +40,16 @@ export class CanvasAdapter3d extends CanvasAdapter {
         return this._context;
     }
 
-    private constructor(settings: CanvasAdapter3dSettings, context: Context3dImpl) {
-        super(settings);
+    private constructor(canvas: HTMLCanvasElement, settings: CanvasAdapter3dSettings, context: Context3dImpl) {
+        super(canvas, settings);
         this._context = context;
         this.canvas.addEventListener('webglcontextlost', this.onContextLost);
     }
 
-    static create(settings: CanvasAdapter3dSettings): CanvasAdapter3d {
+    static create(canvas: HTMLCanvasElement, settings: CanvasAdapter3dSettings): CanvasAdapter3d {
         const antialias = settings?.antialias ?? false;
-        const context2 = this.createContext(settings.canvas, antialias);
-        return new CanvasAdapter3d(settings, new Context3dImpl(context2, {
+        const context2 = this.createContext(canvas, antialias);
+        return new CanvasAdapter3d(canvas, settings, new Context3dImpl(context2, {
             antialias: antialias,
             shaderPrecision: settings.shaderPrecision ?? 'mediump',
         }));

@@ -3,10 +3,9 @@ import { ReferencedObjects } from "../reference";
 import { Timer } from "../timer";
 
 export interface CanvasAdapterData {
-    canvas: HTMLCanvasElement;
     fps?: number | undefined;
-    fullscreen?: boolean;
-    alignTo?: HTMLElement;
+    fullscreen?: boolean | undefined;
+    alignTo?: HTMLElement | undefined;
 }
 
 export abstract class CanvasAdapter {
@@ -51,8 +50,8 @@ export abstract class CanvasAdapter {
         }
     }
 
-    protected constructor(data: Readonly<CanvasAdapterData>) {
-        this.canvas = data.canvas;
+    protected constructor(canvas: HTMLCanvasElement, data: Readonly<CanvasAdapterData>) {
+        this.canvas = canvas;
         this._fullscreen = data.fullscreen ?? false;
         this.timer = new Timer({ fps: data.fps, disabled: true });
         this.timer.onTimer.subscribe(this, timeout => {
@@ -64,7 +63,7 @@ export abstract class CanvasAdapter {
             }
             this.render();
         });
-        data.canvas.addEventListener('click', () => this.onClick(), { capture: true });
+        canvas.addEventListener('click', () => this.onClick(), { capture: true });
         const alignedElement = data.alignTo;
         if (alignedElement != undefined) {
             this.resizeObserverAlignedElement = new ResizeObserver(() => this.alignCanvasToElement(alignedElement));

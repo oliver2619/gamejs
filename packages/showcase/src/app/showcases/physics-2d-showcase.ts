@@ -18,18 +18,25 @@ export class Physics2dShowcase extends Showcase2d {
         const polygon: Array<[number, number]> = [[200, 110], [140, 100], [170, 80]];
         const ball = new Object2d({});
         const ball2 = new Object2d({});
+        const ball3 = new Object2d({});
         const path = new PathBuilder().circle(0, 0, 20).moveTo(0, -25).lineTo(0, 25).moveTo(-25, 0).lineTo(25, 0).build();
         Material2dCache.GLOBAL.getMaterial('pattern').then(material => {
             ball.addPart(new PathSolid2d({ path, material, stroke: true, fill: 'nonzero' }));
             ball2.addPart(new PathSolid2d({ path, material, stroke: true, fill: 'nonzero' }));
+            ball3.addPart(new PathSolid2d({ path, material, stroke: true, fill: 'nonzero' }));
         });
         ball.updateCoordSystem(cs => cs.position.y = 200);
         ball2.updateCoordSystem(cs => {
             cs.position.y = 420;
             cs.position.x = 160;
         });
+        ball3.updateCoordSystem(cs => {
+            cs.position.y = 600;
+            cs.position.x = -200;
+        });
         layer.addPart(ball);
         layer.addPart(ball2);
+        layer.addPart(ball3);
 
         const ps = new PhysicsSystem2d({ globalAcceleration: new Vector2d(0, -490) });
         this.addAnimation(ps, AnimationBuilder.infinite().onAnimate(ev => ps.simulate(ev.timeout)));
@@ -43,6 +50,7 @@ export class Physics2dShowcase extends Showcase2d {
         ps.addStaticBody(new StaticPolygon2d({ points: polygon.map(it => new Vector2d(it[0], it[1])), material: physMat }))
         ps.addDynamicBody(new DynamicCircle({ object: ball, radius: 20, relativeMomentOfInertia: CircleRelativeMomentsOfInertia.HOLLOW_SPHERE, rotationSpeed: 50, material: physMat }));
         ps.addDynamicBody(new DynamicCircle({ object: ball2, radius: 20, relativeMomentOfInertia: CircleRelativeMomentsOfInertia.SOLID_SPHERE, rotationSpeed: -50, material: physMat }));
+        ps.addDynamicBody(new DynamicCircle({ object: ball3, radius: 20, relativeMomentOfInertia: CircleRelativeMomentsOfInertia.HOLLOW_SPHERE, rotationSpeed: 20, material: physMat }));
         ps.rebuild();
         layer.physicsSystem = ps;
     }

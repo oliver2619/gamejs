@@ -27,7 +27,7 @@ export class CanvasAdapter2dComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     if (this.canvas != undefined) {
-      this.adapter = CanvasAdapter2d.create({ canvas: this.canvas.nativeElement, alpha: false, alignTo: this.canvas.nativeElement.parentElement!, imageSmoothing: 'high' });
+      this.adapter = CanvasAdapter2d.create(this.canvas.nativeElement, { alpha: false, alignTo: this.canvas.nativeElement.parentElement!, imageSmoothing: 'high' });
       this.showcase.init(this.adapter);
     }
     PromisesProgress.onProgress.subscribe(this, ev => console.log(`Loaded: ${ev.loaded}, total: ${ev.total}.`))
