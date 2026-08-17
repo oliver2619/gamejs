@@ -3,13 +3,14 @@
   "version": "0.0.1",
   "scripts": {
     "build": "npm run build-libs && npm run build -w packages/showcase",
-    "build-libs": "npm run build -w packages/core && npm run build -w packages/audio && npm run build -w packages/3d && npm run build -w packages/2d && npm run build -w packages/network",
+    "build-libs": "npm run build -w packages/core && npm run build -w packages/worker && npm run build -w packages/audio && npm run build -w packages/3d && npm run build -w packages/2d && npm run build -w packages/network",
     "build-audio": "npm run build -w packages/audio",
     "build-core": "npm run build -w packages/core",
     "build-2d": "npm run build -w packages/2d",
     "build-3d": "npm run build -w packages/3d",
     "build-network": "npm run build -w packages/network",
     "build-showcase": "npm run build -w packages/showcase",
+    "build-worker": "npm run build -w packages/worker",
     "clean-cache": "npm run clean -w packages/showcase",
     "ng": "npm run ng -w packages/showcase",
     "start": "npm run start -w packages/showcase",
@@ -26,7 +27,8 @@
     "packages/audio",
     "packages/core",
     "packages/network",
-    "packages/showcase"
+    "packages/showcase",
+    "packages/worker"
   ],
   "dependencies": {
     "showcase": "^0.0.0"
